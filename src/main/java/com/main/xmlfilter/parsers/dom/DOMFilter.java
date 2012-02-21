@@ -61,9 +61,6 @@ public class DOMFilter implements XmlFilter {
                 case Node.ELEMENT_NODE:
                     handleElement(node);
                     break;
-                case Node.ATTRIBUTE_NODE:
-                    handleAttribute(node);
-                    break;
                 case Node.TEXT_NODE:
                     handleText(node);
                     break;
@@ -86,15 +83,16 @@ public class DOMFilter implements XmlFilter {
         if (depth == Config.getSearchDepth() && !found) {
             node.getParentNode().removeChild(node);
         }
-        // if we just reached the search level and the filter was found, reset the filter flag and leave the node alone
-        else if (depth == Config.getSearchDepth() && found) {
-            found = false;
-        }
         // if we just reached the search level and the filter was found for the first time, insert the custom node
         else if (depth == Config.getSearchDepth() && found && !firstFound) {
             insertCustomNode(node);
             firstFound = true;
         }
+        // if we just reached the search level and the filter was found, reset the filter flag and leave the node alone
+        else if (depth == Config.getSearchDepth() && found) {
+            found = false;
+        }
+
     }
 
     private void insertCustomNode(Node node) {
@@ -131,6 +129,12 @@ public class DOMFilter implements XmlFilter {
     private void handleElement(Node node) {
         if (Config.match(filter, node.getNodeName())) {
             found = true;
+        }
+        if (node.hasAttributes()) {
+            NamedNodeMap attributes = node.getAttributes();
+            for (int i = 0; i < attributes.getLength(); i++) {
+                handleAttribute(attributes.item(i));
+            }
         }
     }
 

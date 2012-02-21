@@ -111,7 +111,7 @@ public class StAXFilter implements XmlFilter {
     private Map<String, String> buildAttributeMap(XMLStreamReader reader) {
         Map<String, String> result = new HashMap<String, String>(reader.getAttributeCount());
         for (int i = 0; i < reader.getAttributeCount(); i++) {
-            result.put(getFullName(reader.getAttributePrefix(i), reader.getAttributeValue(i)), reader.getAttributeValue(i));
+            result.put(getFullName(reader.getAttributePrefix(i), reader.getAttributeLocalName(i)), reader.getAttributeValue(i));
         }
         return result;
     }
