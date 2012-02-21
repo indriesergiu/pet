@@ -4,13 +4,16 @@
 
     To run type:
 
-    ant -Dfile=d:/sample.xml -Dfilter="Dog"
+    ant -Dfile=d:/sample.xml -Dfilter="apple" -DoutputFile="d:\o.txt" -DinputNodeName="Lala" -Dparser="sax"
 
     -->
 
     <!--input parameters-->
     <property name="file" value=""/>
     <property name="filter" value=""/>
+    <property name="outputFile" value=""/>
+    <property name="inputNodeName" value=""/>
+    <property name="parser" value=""/>
 
     <!--build internal variables-->
     <property name="src.dir" value="src"/>
@@ -22,7 +25,7 @@
     <property name="build.jar.dir" value="${build.dir}/jar"/>
     <property name="build.resources.dir" value="${build.dir}/resources"/>
 
-    <property name="main-class" value="com.main.xmlfilter.XmlFilter"/>
+    <property name="main-class" value="com.main.xmlfilter.XmlFilterMain"/>
 
     <path id="application" location="${build.jar.dir}/${ant.project.name}.jar"/>
 
@@ -63,6 +66,9 @@
             </classpath>
             <arg value="${file}"/>
             <arg value="${filter}"/>
+            <arg value="${outputFile}"/>
+            <arg value="${inputNodeName}"/>
+            <arg value="${parser}"/>
         </java>
     </target>
 

@@ -1,7 +1,7 @@
 package com.main.xmlfilter.sax;
 
 import com.main.xmlfilter.Config;
-import com.main.xmlfilter.XmlFilterParser;
+import com.main.xmlfilter.XmlFilter;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.SAXParser;
@@ -13,9 +13,10 @@ import java.io.*;
  *
  * @author sergiu.indrie
  */
-public class SAXFilter implements XmlFilterParser {
+public class SAXFilter implements XmlFilter {
 
-    public void filter(InputSource inputSource, String filter, OutputStream outputStream) throws Exception {
+    public void filter(Reader reader, String filter, OutputStream outputStream) throws Exception {
+        InputSource inputSource = new InputSource(reader);
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
         saxParser.parse(inputSource, new SAXFilterHandler(filter, outputStream));
@@ -27,9 +28,8 @@ public class SAXFilter implements XmlFilterParser {
         String outputFile = "D:\\output.xml";
         InputStream inputStream = new FileInputStream(filename);
         Reader reader = new InputStreamReader(inputStream, Config.ENCODING);
-        InputSource is = new InputSource(reader);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
-        new SAXFilter().filter(is, filter, outputStream);
+        new SAXFilter().filter(reader, filter, outputStream);
         inputStream.close();
         outputStream.close();
     }

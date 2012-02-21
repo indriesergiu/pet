@@ -21,13 +21,38 @@ import java.util.Stack;
  */
 public class SAXFilterHandler extends DefaultHandler {
 
+    /**
+     * the filter
+     */
     private String filter;
+    /**
+     * output file's stream
+     */
     private OutputStream outputStream;
+    /**
+     * the current depth
+     */
     private int depth;
+    /**
+     * the filtered XML's elements
+     */
     private Stack<XMLElement> elements;
+    /**
+     * indicates that the searched element was found in the current node
+     */
     private boolean found = false;
+    /**
+     * the XML writer
+     */
     private XMLWriter writer;
+    /**
+     * tells the depth of the next tag that has to be added into the element stack even if the found element is not true
+     */
     private int lastFoundDepth = -1;
+    /**
+     * tells if the custom node has been inserted
+     */
+    private boolean customNodeInserted = false;
 
     public SAXFilterHandler(String filter, OutputStream outputStream) {
         this.filter = filter;
@@ -42,12 +67,12 @@ public class SAXFilterHandler extends DefaultHandler {
 
         // if search depth has not been reached, don't start searching
         if (depth >= Config.getSearchDepth()) {
-            if (match(qName)) {
+            if (Config.match(filter, qName)) {
                 found = true;
                 lastFoundDepth = depth;
             } else if (attributes.getLength() > 0) {
                 for (int i = 0; i < attributes.getLength(); i++) {
-                    if (match(attributes.getValue(i))) {
+                    if (Config.match(filter, attributes.getValue(i)) || Config.match(filter, attributes.getQName(i))) {
                         found = true;
                         lastFoundDepth = depth;
                         break;
@@ -64,15 +89,23 @@ public class SAXFilterHandler extends DefaultHandler {
         depth--;
 
         if (depth <= Config.getSearchDepth() && !found) {
+            // if this depth is not the expected one, remove the one
             if (depth != lastFoundDepth - 1) {
-                // the search level has been reached and no filter was found, remove this node from the stack
+                // we are outside the search level and the filter has not been found, remove this node
                 popNode(qName);
             }
         } else if (depth <= Config.getSearchDepth() && found) {
             // the search level has been reached and a filter was found, leave the elements in the stack and continue search
             found = false;
+
+            // add the custom node
+            if (!customNodeInserted) {
+                pushCustomNode();
+                customNodeInserted = true;
+            }
         }
 
+        // if the depth is the expected one, change it accordingly
         if (depth == lastFoundDepth - 1) {
             lastFoundDepth--;
         }
@@ -94,7 +127,7 @@ public class SAXFilterHandler extends DefaultHandler {
             return;
         }
 
-        if (match(data)) {
+        if (Config.match(filter, data)) {
             found = true;
             lastFoundDepth = depth;
         }
@@ -103,10 +136,6 @@ public class SAXFilterHandler extends DefaultHandler {
 
     public void endDocument() {
         writer.write(elements.iterator(), outputStream);
-    }
-
-    private boolean match(String data) {
-        return data.toLowerCase().contains(filter.toLowerCase());
     }
 
     private Map<String, String> buildAttributeMap(Attributes attributes) {
@@ -119,5 +148,16 @@ public class SAXFilterHandler extends DefaultHandler {
         } else {
             return null;
         }
+    }
+
+    private void pushCustomNode() {
+        String name = Config.getInsertionName();
+        Map<String, String> attributes = new HashMap<String, String>();
+        attributes.put(name + "Attr", name + "Value");
+        elements.push(new StartElement(null, null, name, attributes));
+        elements.push(new StartElement(null, null, name + "Child", null));
+        elements.push(new DataElement(name + "Data"));
+        elements.push(new EndElement(null, null, name + "Child"));
+        elements.push(new EndElement(null, null, name));
     }
 }
