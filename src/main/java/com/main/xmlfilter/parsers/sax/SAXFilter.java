@@ -17,6 +17,7 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
+import java.util.zip.GZIPInputStream;
 
 /**
  * SAX handler
@@ -178,11 +179,12 @@ public class SAXFilter extends DefaultHandler implements XmlFilter {
     }
 
     public static void main(String[] args) throws Exception {
-        String filename = "D:\\sample.xml";
+        String filename = "D:\\sample.gz";
         String filter = "apple";
         String outputFile = "D:\\output.xml";
         InputStream inputStream = new FileInputStream(filename);
-        Reader reader = new InputStreamReader(inputStream, Config.ENCODING);
+        GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
+        Reader reader = new InputStreamReader(gzipInputStream, Config.ENCODING);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
         new SAXFilter().filter(reader, filter, outputStream);
         inputStream.close();

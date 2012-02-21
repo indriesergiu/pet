@@ -1,5 +1,8 @@
 package com.main.xmlfilter.config;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 /**
  * Holds app config.
  *
@@ -14,6 +17,10 @@ public class Config {
     public static String ENCODING = "UTF-8";
 
     private String insertionName = "XMLFilter";
+
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    private java.util.logging.Logger logger = java.util.logging.Logger.getAnonymousLogger();
 
     private Config() {
     }
@@ -40,5 +47,13 @@ public class Config {
 
     public boolean match(String filter, String data) {
         return data.toLowerCase().contains(filter.toLowerCase());
+    }
+
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
+    }
+
+    public java.util.logging.Logger getLogger() {
+        return logger;
     }
 }

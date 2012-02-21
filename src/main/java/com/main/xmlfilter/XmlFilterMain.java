@@ -2,11 +2,13 @@ package com.main.xmlfilter;
 
 import com.main.xmlfilter.config.Config;
 import com.main.xmlfilter.monitor.MemoryTracker;
-import com.main.xmlfilter.util.SizePrinter;
+import com.main.xmlfilter.monitor.MemoryTrackerFactory;
+import com.main.xmlfilter.monitor.MemoryTrackerType;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -35,26 +37,29 @@ public class XmlFilterMain {
         String inputNodeName = args[3];
         String parser = args[4];
         String gzip = args[5];
+        String memoryTrackerType = args[6];
+
+        MemoryTracker memoryTracker = MemoryTrackerFactory.getMemoryTracker(MemoryTrackerType.valueOf(memoryTrackerType.toUpperCase()));
 
         if (parser.equals(ALL_PARSERS)) {
             for (ParserType parserType : ParserType.values()) {
                 log("Using parser: " + parserType);
                 XmlFilter xmlFilter = XmlFilterFactory.getFilter(parserType);
-                runFilter(filename, filter, outputFilename + "_" + parserType, inputNodeName, xmlFilter, Boolean.valueOf(gzip));
+                runFilter(filename, filter, outputFilename + "_" + parserType, inputNodeName, xmlFilter, Boolean.valueOf(gzip), memoryTracker);
                 log("\n\n");
             }
         } else {
             ParserType parserType = ParserType.valueOf(parser.toUpperCase());
             XmlFilter xmlFilter = XmlFilterFactory.getFilter(parserType);
             log("Using parser: " + parserType);
-            runFilter(filename, filter, outputFilename, inputNodeName, xmlFilter, Boolean.valueOf(gzip));
+            runFilter(filename, filter, outputFilename, inputNodeName, xmlFilter, Boolean.valueOf(gzip), memoryTracker);
         }
 
-        MemoryTracker.getInstance().shutdown();
+        Config.getInstance().getScheduler().shutdown();
     }
 
-    private static void runFilter(String filename, String filter, String outputFilename, String inputNodeName, XmlFilter xmlFilter, Boolean gzip) throws IOException {
-        MemoryTracker.getInstance().startTracking();
+    private static void runFilter(String filename, String filter, String outputFilename, String inputNodeName, XmlFilter xmlFilter, Boolean gzip, MemoryTracker memoryTracker) throws IOException {
+        memoryTracker.startTracking();
 
         Config.getInstance().setInsertionName(inputNodeName);
         log("Processing file: " + filename);
@@ -79,7 +84,7 @@ public class XmlFilterMain {
                 xmlFilter.filter(reader, filter, outputStream);
             } else if (filename.endsWith(GZIP_EXTENSION)) {
                 GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
-                reader = new InputStreamReader(inputStream, Config.ENCODING);
+                reader = new InputStreamReader(gzipInputStream, Config.ENCODING);
                 xmlFilter.filter(reader, filter, outputStream);
                 gzipInputStream.close();
             } else {
@@ -110,11 +115,12 @@ public class XmlFilterMain {
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
         log("Total execution time: " + format.format(new Date(millis - TWO_HOURS)));
 
-        MemoryTracker.getInstance().stopTracking();
-        log("Maximum memory usage: " + SizePrinter.formatSize(MemoryTracker.getInstance().getMaxUsage()));
+        memoryTracker.stopTracking();
+        log("Maximum memory usage: " + memoryTracker.getMaxUsage());
     }
 
     private static void log(String s) {
+//        Config.getInstance().getLogger().log(Level.INFO, s);
         System.out.println(s);
     }
 }

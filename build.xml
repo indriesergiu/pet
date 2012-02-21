@@ -4,7 +4,11 @@
 
     To run type:
 
-    ant -Dfile=d:/sample.xml -Dfilter="apple" -DoutputFile="d:\o.txt" -DinputNodeName="Lala" -Dparser="sax" -Dgzip="true"
+    ant -Dfile="d:/sample.gz" -Dfilter="apple" -DoutputFile="d:\o.txt" -DinputNodeName="Lala" -Dparser="all" -Dgzip="true" -DmemoryTracker="runtime"
+
+    parser          -   all , sax , dom , stax
+    gzip            -   true , false
+    memoryTracker   -   runtime , mx
 
     -->
 
@@ -15,6 +19,7 @@
     <property name="inputNodeName" value=""/>
     <property name="parser" value=""/>
     <property name="gzip" value=""/>
+    <property name="memoryTracker" value=""/>
 
     <!--build internal variables-->
     <property name="src.dir" value="src"/>
@@ -71,6 +76,7 @@
             <arg value="${inputNodeName}"/>
             <arg value="${parser}"/>
             <arg value="${gzip}"/>
+            <arg value="${memoryTracker}"/>
         </java>
     </target>
 

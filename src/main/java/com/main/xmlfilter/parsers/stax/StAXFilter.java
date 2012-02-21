@@ -46,6 +46,10 @@ public class StAXFilter implements XmlFilter {
      */
     private Config config = Config.getInstance();
 
+    // fields for xml start document
+    private String encoding;
+    private String version;
+
     public StAXFilter() {
         elements = new Stack<XMLElement>();
     }
@@ -72,6 +76,8 @@ public class StAXFilter implements XmlFilter {
      * Holds the main filter logic.
      */
     private void process(XMLStreamReader reader, XMLStreamWriter writer) throws XMLStreamException {
+        startDocument(reader);  // the START_DOCUMENT is never reached
+
         while (reader.hasNext()) {
             int event = reader.next();
 
@@ -90,6 +96,11 @@ public class StAXFilter implements XmlFilter {
                     break;
             }
         }
+    }
+
+    private void startDocument(XMLStreamReader reader) {
+        encoding = reader.getCharacterEncodingScheme();
+        version = reader.getVersion();
     }
 
     private void startElement(XMLStreamReader reader) {
@@ -172,8 +183,7 @@ public class StAXFilter implements XmlFilter {
     }
 
     private void endDocument(XMLStreamWriter writer) throws XMLStreamException {
-        // TODO write encoding, version etc. (obtain from reader)
-//        writer.writeStartElement();
+        writer.writeStartDocument(encoding, version);
         for (XMLElement element : elements) {
             switch (element.getType()) {
                 case START:
