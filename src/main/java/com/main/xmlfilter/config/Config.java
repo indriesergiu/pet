@@ -22,6 +22,34 @@ public class Config {
 
     private java.util.logging.Logger logger = java.util.logging.Logger.getAnonymousLogger();
 
+    public String USAGE = "XML Filter\n"
+                          + "\n"
+                          + "To run the app with default settings type\n"
+                          + "\n"
+                          + "ant\n"
+                          + "\n"
+                          + "The command line arguments of the app are:\n\n"
+                          + "\tfile\t\t- the XML input file that will be filtered (this can be \".xml\" or \".gz\")\n"
+                          + "\t\t\t  default value is \"d:/sample.xml\"\n"
+                          + "\tfilter\t\t- the string filter that will be searched in the XML file\n"
+                          + "\t\t\t  default value is \"apple\"\n"
+                          + "\toutputFile\t- the output file name that will contain the filtered result\n"
+                          + "\t\t\t  default value is \"d:/out.xml\"\n"
+                          + "\tinputNodeName\t- the name that will be used to create the custom node that will be inserted in the resulting file\n"
+                          + "\t\t\t  default value is \"Lala\"\n"
+                          + "\tparser\t\t- the type of XML parser that will be used to process the file \n"
+                          + "\t\t\t  possible values are: sax, dom, stax, all\n"
+                          + "\t\t\t  default value is \"dom\"\n"
+                          + "\tgzip\t\t- this indicates if the result is to be compressed in gzip format, possible values are: true, false\n"
+                          + "\t\t\t  default value is \"false\"\n"
+                          + "\tmemoryTracker\t- the type of memory usage tracker that will be used, possible values: runtime, mx\n"
+                          + "\t\t\t  default value is \"runtime\"\n"
+                          + "\thelp\t\t- generates this message, possible values: true, false\n"
+                          + "\t\t\t  default value is \"false\"\n"
+                          + "\nHere's a sample command with all the arguments\n"
+                          + "\n"
+                          + "ant -Dfile=\"d:/sample.gz\" -Dfilter=\"apple\" -DoutputFile=\"d:\\o.txt\" -DinputNodeName=\"Lala\" -Dparser=\"all\" -Dgzip=\"true\" -DmemoryTracker=\"runtime\"\n";
+
     private Config() {
     }
 

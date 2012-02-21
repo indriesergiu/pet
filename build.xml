@@ -10,26 +10,28 @@
     gzip            -   true , false
     memoryTracker   -   runtime , mx
 
+    or just
+
+    ant
+
     -->
 
-    <!--input parameters-->
-    <property name="file" value=""/>
-    <property name="filter" value=""/>
-    <property name="outputFile" value=""/>
-    <property name="inputNodeName" value=""/>
-    <property name="parser" value=""/>
-    <property name="gzip" value=""/>
-    <property name="memoryTracker" value=""/>
+    <!--input parameters default values (they are overridden by command line values)-->
+    <property name="file" value="d:/sample.xml"/>
+    <property name="filter" value="apple"/>
+    <property name="outputFile" value="d:/out.xml"/>
+    <property name="inputNodeName" value="Lala"/>
+    <property name="parser" value="dom"/>
+    <property name="gzip" value="false"/>
+    <property name="memoryTracker" value="runtime"/>
+    <property name="help" value="false"/>
 
     <!--build internal variables-->
     <property name="src.dir" value="src"/>
-    <property name="resource.dir" value="src/main/resources"/>
-    <property name="test.dir" value="src/test"/>
     <property name="lib.dir" value="lib"/>
     <property name="build.dir" value="build"/>
     <property name="build.classes.dir" value="${build.dir}/classes"/>
     <property name="build.jar.dir" value="${build.dir}/jar"/>
-    <property name="build.resources.dir" value="${build.dir}/resources"/>
 
     <property name="main-class" value="com.main.xmlfilter.XmlFilterMain"/>
 
@@ -43,14 +45,7 @@
         <delete dir="${build.dir}"/>
     </target>
 
-    <target name="copy-resources">
-        <copy todir="${build.classes.dir}">
-            <fileset dir="${resource.dir}"/>
-        </copy>
-
-    </target>
-
-    <target name="compile" depends="copy-resources">
+    <target name="compile">
         <mkdir dir="${build.classes.dir}"/>
         <javac srcdir="${src.dir}" destdir="${build.classes.dir}" classpathref="classpath" includeantruntime="false"/>
     </target>
@@ -77,20 +72,8 @@
             <arg value="${parser}"/>
             <arg value="${gzip}"/>
             <arg value="${memoryTracker}"/>
+            <arg value="${help}"/>
         </java>
-    </target>
-
-    <target name="test" depends="jar">
-        <junit printsummary="yes">
-            <classpath>
-                <path refid="classpath"/>
-                <path refid="application"/>
-            </classpath>
-
-            <batchtest fork="yes">
-                <fileset dir="${test.dir}" includes="*Test.java"/>
-            </batchtest>
-        </junit>
     </target>
 
     <target name="clean-build" depends="clean,jar"/>
