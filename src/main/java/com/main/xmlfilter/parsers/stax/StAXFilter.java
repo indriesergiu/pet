@@ -1,7 +1,7 @@
 package com.main.xmlfilter.parsers.stax;
 
-import com.main.xmlfilter.config.Config;
 import com.main.xmlfilter.XmlFilter;
+import com.main.xmlfilter.config.Config;
 import com.main.xmlfilter.parsers.stax.elements.ElementType;
 import com.main.xmlfilter.parsers.stax.elements.XMLElement;
 
@@ -56,8 +56,10 @@ public class StAXFilter implements XmlFilter {
         inputFactory.setProperty("javax.xml.stream.isValidating", false);
         XMLStreamReader xmlStreamReader = inputFactory.createXMLStreamReader(reader);
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, Config.ENCODING);
         // try to resolve indentation problem
-        XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);
+        XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStreamWriter);
         //        XMLStreamWriter writer = new IndentingXMLStreamWriter(outputFactory.createXMLStreamWriter(outputStream));     // compile error
         writer = new javanet.staxutils.IndentingXMLStreamWriter(writer);
         process(xmlStreamReader, writer);
@@ -118,6 +120,13 @@ public class StAXFilter implements XmlFilter {
         for (int i = 0; i < reader.getAttributeCount(); i++) {
             result.put(getFullName(reader.getAttributePrefix(i), reader.getAttributeLocalName(i)), reader.getAttributeValue(i));
         }
+        int namespaceCount = reader.getNamespaceCount();
+        if (namespaceCount > 0) {
+            for (int i = 0; i < namespaceCount; i++) {
+                result.put(getFullName("xmlns", reader.getNamespacePrefix(i)), reader.getNamespaceURI(i));
+            }
+        }
+
         return result;
     }
 
@@ -163,6 +172,8 @@ public class StAXFilter implements XmlFilter {
     }
 
     private void endDocument(XMLStreamWriter writer) throws XMLStreamException {
+        // TODO write encoding, version etc. (obtain from reader)
+//        writer.writeStartElement();
         for (XMLElement element : elements) {
             switch (element.getType()) {
                 case START:
@@ -209,7 +220,10 @@ public class StAXFilter implements XmlFilter {
 
     private String getFullName(String prefix, String local) {
         StringBuilder qName = new StringBuilder();
-        qName.append(prefix != null ? prefix + ":" : "");
+        qName.append(prefix != null ? prefix : "");
+        if (prefix != null && !prefix.equals("") && local != null && !local.equals("")) {
+            qName.append(":");
+        }
         qName.append(local != null ? local : "");
         return qName.toString();
     }

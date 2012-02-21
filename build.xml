@@ -4,7 +4,7 @@
 
     To run type:
 
-    ant -Dfile=d:/sample.xml -Dfilter="apple" -DoutputFile="d:\o.txt" -DinputNodeName="Lala" -Dparser="sax"
+    ant -Dfile=d:/sample.xml -Dfilter="apple" -DoutputFile="d:\o.txt" -DinputNodeName="Lala" -Dparser="sax" -Dgzip="true"
 
     -->
 
@@ -14,6 +14,7 @@
     <property name="outputFile" value=""/>
     <property name="inputNodeName" value=""/>
     <property name="parser" value=""/>
+    <property name="gzip" value=""/>
 
     <!--build internal variables-->
     <property name="src.dir" value="src"/>
@@ -69,6 +70,7 @@
             <arg value="${outputFile}"/>
             <arg value="${inputNodeName}"/>
             <arg value="${parser}"/>
+            <arg value="${gzip}"/>
         </java>
     </target>
 

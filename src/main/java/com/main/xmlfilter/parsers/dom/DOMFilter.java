@@ -149,12 +149,15 @@ public class DOMFilter implements XmlFilter {
     public static void main(String[] args) throws Exception {
         String filename = "D:\\sample.xml";
         String filter = "apple";
-        String outputFile = "D:\\output.xml";
+        String outputFile = "D:\\output.gz";
         InputStream inputStream = new FileInputStream(filename);
         Reader reader = new InputStreamReader(inputStream, Config.ENCODING);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
-        new DOMFilter().filter(reader, filter, outputStream);
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
+        new DOMFilter().filter(reader, filter, gzipOutputStream);
         inputStream.close();
+        gzipOutputStream.finish();
+        gzipOutputStream.close();
         outputStream.close();
     }
 }

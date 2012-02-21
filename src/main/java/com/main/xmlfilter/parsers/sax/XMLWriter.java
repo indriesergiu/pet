@@ -53,7 +53,7 @@ public class XMLWriter {
 
     private String addIndent(String text) {
         for (int i = 0; i < level; i++) {
-            text = "\t" + text;
+            text = "  " + text;
         }
         return text;
     }
