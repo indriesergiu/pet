@@ -1,6 +1,7 @@
 package com.main.xmlfilter;
 
 import com.main.xmlfilter.sax.SAXFilter;
+import com.main.xmlfilter.stax.StAXFilter;
 
 /**
  * Creates XML filters.
@@ -19,6 +20,8 @@ public class XmlFilterFactory {
         switch (type) {
             case SAX:
                 return new SAXFilter();
+            case STAX:
+                return new StAXFilter();
             default:
                 throw new IllegalArgumentException("No such parser");
         }

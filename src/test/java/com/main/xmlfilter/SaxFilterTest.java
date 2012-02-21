@@ -1,6 +1,5 @@
 package com.main.xmlfilter;
 
-import com.main.xmlfilter.sax.SAXFilter;
 import org.junit.Test;
 import org.xml.sax.InputSource;
 
@@ -27,7 +26,7 @@ public class SaxFilterTest {
             InputSource is = new InputSource(reader);
             outputStream = new FileOutputStream(outputFilename);
 
-//            new SAXFilter().filter(is, filter, outputStream);
+//            new SAXFilterasd().filter(is, filter, outputStream);
 
         } catch (Exception e) {
             e.printStackTrace();
