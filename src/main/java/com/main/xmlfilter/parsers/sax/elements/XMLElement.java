@@ -1,4 +1,4 @@
-package com.main.xmlfilter.sax.elements;
+package com.main.xmlfilter.parsers.sax.elements;
 
 /**
  * An XML element

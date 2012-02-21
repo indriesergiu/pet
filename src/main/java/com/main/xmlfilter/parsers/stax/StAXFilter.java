@@ -1,9 +1,9 @@
-package com.main.xmlfilter.stax;
+package com.main.xmlfilter.parsers.stax;
 
 import com.main.xmlfilter.config.Config;
 import com.main.xmlfilter.XmlFilter;
-import com.main.xmlfilter.stax.elements.ElementType;
-import com.main.xmlfilter.stax.elements.XMLElement;
+import com.main.xmlfilter.parsers.stax.elements.ElementType;
+import com.main.xmlfilter.parsers.stax.elements.XMLElement;
 
 import javax.xml.stream.*;
 import java.io.*;

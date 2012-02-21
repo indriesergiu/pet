@@ -1,11 +1,11 @@
-package com.main.xmlfilter.sax;
+package com.main.xmlfilter.parsers.sax;
 
 import com.main.xmlfilter.config.Config;
 import com.main.xmlfilter.XmlFilter;
-import com.main.xmlfilter.sax.elements.DataElement;
-import com.main.xmlfilter.sax.elements.EndElement;
-import com.main.xmlfilter.sax.elements.StartElement;
-import com.main.xmlfilter.sax.elements.XMLElement;
+import com.main.xmlfilter.parsers.sax.elements.DataElement;
+import com.main.xmlfilter.parsers.sax.elements.EndElement;
+import com.main.xmlfilter.parsers.sax.elements.StartElement;
+import com.main.xmlfilter.parsers.sax.elements.XMLElement;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

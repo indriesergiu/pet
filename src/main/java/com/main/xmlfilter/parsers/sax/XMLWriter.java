@@ -1,13 +1,12 @@
-package com.main.xmlfilter.sax;
+package com.main.xmlfilter.parsers.sax;
 
-import com.main.xmlfilter.sax.elements.EndElement;
-import com.main.xmlfilter.sax.elements.StartElement;
-import com.main.xmlfilter.sax.elements.XMLElement;
+import com.main.xmlfilter.parsers.sax.elements.EndElement;
+import com.main.xmlfilter.parsers.sax.elements.StartElement;
+import com.main.xmlfilter.parsers.sax.elements.XMLElement;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
-import java.util.Stack;
 
 /**
  * Writer of XML files.
