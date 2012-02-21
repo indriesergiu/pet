@@ -1,5 +1,9 @@
 package com.main.xmlfilter;
 
+import com.main.xmlfilter.config.Config;
+import com.main.xmlfilter.monitor.MemoryTracker;
+import com.main.xmlfilter.util.SizePrinter;
+
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,8 +26,7 @@ public class XmlFilterMain {
         if (args.length < 2 || args[1] == null || args[1].equals("")) {
             throw new IllegalArgumentException("No filter specified.");
         }
-        // TODO obtain output filename
-        //        String filename = "/com/main/xmlfilter/terms.rdf.u8.gz";
+        
         String filename = args[0];
         String filter = args[1];
         String outputFilename = args[2];
@@ -43,9 +46,13 @@ public class XmlFilterMain {
             log("Using parser: " + parserType);
             runFilter(filename, filter, outputFilename, inputNodeName, xmlFilter);
         }
+
+        MemoryTracker.getInstance().shutdown();
     }
 
     private static void runFilter(String filename, String filter, String outputFilename, String inputNodeName, XmlFilter xmlFilter) throws IOException {
+        MemoryTracker.getInstance().startTracking();
+
         Config.setInsertionName(inputNodeName);
         log("Processing file: " + filename);
 
@@ -88,6 +95,9 @@ public class XmlFilterMain {
         long millis = end.getTime() - start.getTime();
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
         log("Total execution time: " + format.format(new Date(millis - TWO_HOURS)));
+
+        MemoryTracker.getInstance().stopTracking();
+        log("Maximum memory usage: " + SizePrinter.formatSize(MemoryTracker.getInstance().getMaxUsage()));
     }
 
     private static void log(String s) {

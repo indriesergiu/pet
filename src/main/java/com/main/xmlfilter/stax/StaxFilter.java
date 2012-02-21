@@ -1,6 +1,6 @@
 package com.main.xmlfilter.stax;
 
-import com.main.xmlfilter.Config;
+import com.main.xmlfilter.config.Config;
 import com.main.xmlfilter.XmlFilter;
 import com.main.xmlfilter.stax.elements.ElementType;
 import com.main.xmlfilter.stax.elements.XMLElement;

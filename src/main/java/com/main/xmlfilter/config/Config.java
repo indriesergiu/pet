@@ -1,4 +1,4 @@
-package com.main.xmlfilter;
+package com.main.xmlfilter.config;
 
 /**
  * Holds app config.

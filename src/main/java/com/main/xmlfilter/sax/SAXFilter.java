@@ -1,6 +1,6 @@
 package com.main.xmlfilter.sax;
 
-import com.main.xmlfilter.Config;
+import com.main.xmlfilter.config.Config;
 import com.main.xmlfilter.XmlFilter;
 import com.main.xmlfilter.sax.elements.DataElement;
 import com.main.xmlfilter.sax.elements.EndElement;

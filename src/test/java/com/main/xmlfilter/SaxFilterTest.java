@@ -1,5 +1,6 @@
 package com.main.xmlfilter;
 
+import com.main.xmlfilter.config.Config;
 import org.junit.Test;
 import org.xml.sax.InputSource;
 
