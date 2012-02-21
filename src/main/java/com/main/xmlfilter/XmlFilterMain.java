@@ -119,7 +119,7 @@ public class XmlFilterMain {
             log("Total execution time: " + format.format(new Date(millis - TWO_HOURS)));
 
             memoryTracker.stopTracking();
-            log("Maximum memory usage: " + memoryTracker.getMaxUsage());
+            log("Maximum used memory: " + memoryTracker.getMaxUsage());
         } catch (Exception e) {
             e.printStackTrace();
             log("Execution failed.");
