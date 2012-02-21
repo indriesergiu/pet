@@ -9,6 +9,8 @@ public class Config {
 
     private static int searchDepth = 1;
 
+    public static String ENCODING = "UTF-8";
+
     public static int getSearchDepth() {
         return searchDepth;
     }

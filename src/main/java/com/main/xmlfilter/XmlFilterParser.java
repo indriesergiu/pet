@@ -1,6 +1,7 @@
 package com.main.xmlfilter;
 
-import java.io.InputStream;
+import org.xml.sax.InputSource;
+
 import java.io.OutputStream;
 
 /**
@@ -13,10 +14,10 @@ public interface XmlFilterParser {
     /**
      * Filter the given file.
      *
-     * @param inputStream the input stream of the file to be filtered
+     * @param inputSource the input source of the file to be filtered
      * @param filter the string used to filter
      * @param outputStream the output stream where the filtered result will be placed
      * @throws Exception an error while parsing/filtering
      */
-    public void filter(InputStream inputStream, String filter, OutputStream outputStream) throws Exception;
+    public void filter(InputSource inputSource, String filter, OutputStream outputStream) throws Exception;
 }

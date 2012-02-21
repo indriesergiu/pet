@@ -1,6 +1,7 @@
 package com.main.xmlfilter;
 
 import com.main.xmlfilter.sax.SAXFilter;
+import org.xml.sax.InputSource;
 
 import java.io.*;
 import java.util.zip.GZIPInputStream;
@@ -31,16 +32,20 @@ public class XmlFilter {
         OutputStream outputStream = null;
         try {
             inputStream = new FileInputStream(filename);
+            Reader reader = new InputStreamReader(inputStream, Config.ENCODING);
+            InputSource is = new InputSource(reader);
             outputStream = new FileOutputStream(outputFilename);
 
             if (filename.endsWith(".xml")) {
-                new SAXFilter().filter(inputStream, filter, outputStream);
+                new SAXFilter().filter(is, filter, outputStream);
             } else if (filename.endsWith(".gz")) {
                 GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
-                new SAXFilter().filter(gzipInputStream, filter, outputStream);
+                reader = new InputStreamReader(inputStream, Config.ENCODING);
+                InputSource inputSource = new InputSource(reader);
+                new SAXFilter().filter(inputSource, filter, outputStream);
                 gzipInputStream.close();
             } else {
-                new SAXFilter().filter(inputStream, filter, outputStream);
+                new SAXFilter().filter(is, filter, outputStream);
             }
 
         } catch (Exception e) {
