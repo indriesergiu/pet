@@ -1,5 +1,18 @@
 <project name="xml-filter" basedir="." default="main">
 
+    <!--
+
+    To run type:
+
+    ant -Dfile=d:/sample.xml -Dfilter="Dog"
+
+    -->
+
+    <!--input parameters-->
+    <property name="file" value=""/>
+    <property name="filter" value=""/>
+
+    <!--build internal variables-->
     <property name="src.dir" value="src"/>
     <property name="resource.dir" value="src/main/resources"/>
     <property name="test.dir" value="src/test"/>
@@ -9,7 +22,7 @@
     <property name="build.jar.dir" value="${build.dir}/jar"/>
     <property name="build.resources.dir" value="${build.dir}/resources"/>
 
-    <property name="main-class" value="com.main.xmlfilter.sax.SAXReader"/>
+    <property name="main-class" value="com.main.xmlfilter.XmlFilter"/>
 
     <path id="application" location="${build.jar.dir}/${ant.project.name}.jar"/>
 
@@ -48,6 +61,8 @@
                 <path refid="classpath"/>
                 <path refid="application"/>
             </classpath>
+            <arg value="${file}"/>
+            <arg value="${filter}"/>
         </java>
     </target>
 
