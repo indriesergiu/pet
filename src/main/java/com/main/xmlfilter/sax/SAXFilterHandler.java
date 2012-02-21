@@ -27,6 +27,7 @@ public class SAXFilterHandler extends DefaultHandler {
     private Stack<XMLElement> elements;
     private boolean found = false;
     private XMLWriter writer;
+    private int lastFoundDepth = -1;
 
     public SAXFilterHandler(String filter, OutputStream outputStream) {
         this.filter = filter;
@@ -35,6 +36,7 @@ public class SAXFilterHandler extends DefaultHandler {
         writer = new XMLWriter();
     }
 
+    @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         elements.push(new StartElement(uri, localName, qName, buildAttributeMap(attributes)));
 
@@ -42,10 +44,12 @@ public class SAXFilterHandler extends DefaultHandler {
         if (depth >= Config.getSearchDepth()) {
             if (match(qName)) {
                 found = true;
+                lastFoundDepth = depth;
             } else if (attributes.getLength() > 0) {
                 for (int i = 0; i < attributes.getLength(); i++) {
                     if (match(attributes.getValue(i))) {
                         found = true;
+                        lastFoundDepth = depth;
                         break;
                     }
                 }
@@ -54,24 +58,35 @@ public class SAXFilterHandler extends DefaultHandler {
         depth++;
     }
 
+    @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         elements.push(new EndElement(uri, localName, qName));
         depth--;
 
         if (depth <= Config.getSearchDepth() && !found) {
-            // the search level has been reached and no filter was found, remove this node from the stack
-            elements.pop();
-            while (!elements.empty() && !qName.equals(elements.pop().getqName())) {
-                ;
+            if (depth != lastFoundDepth - 1) {
+                // the search level has been reached and no filter was found, remove this node from the stack
+                popNode(qName);
             }
         } else if (depth <= Config.getSearchDepth() && found) {
-            // the search level has been reached and a filter was found, send the elements to the writer
-            writer.write(elements, outputStream);
-            elements.clear();
+            // the search level has been reached and a filter was found, leave the elements in the stack and continue search
             found = false;
+        }
+
+        if (depth == lastFoundDepth - 1) {
+            lastFoundDepth--;
         }
     }
 
+    private void popNode(String qName) {
+        elements.pop();     // remove first node with identical name
+        while (!qName.equals(elements.peek().getqName())) {
+            elements.pop();
+        }
+        elements.pop();
+    }
+
+    @Override
     public void characters(char ch[], int start, int length) throws SAXException {
         String data = new String(ch, start, length);
 
@@ -81,8 +96,13 @@ public class SAXFilterHandler extends DefaultHandler {
 
         if (match(data)) {
             found = true;
+            lastFoundDepth = depth;
         }
         elements.push(new DataElement(data));
+    }
+
+    public void endDocument() {
+        writer.write(elements.iterator(), outputStream);
     }
 
     private boolean match(String data) {

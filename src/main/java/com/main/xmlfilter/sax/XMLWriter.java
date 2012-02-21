@@ -20,9 +20,7 @@ public class XMLWriter {
     private Class lastType;
     private int level = 0;
 
-    public void write(Stack<XMLElement> elements, OutputStream outputStream) {
-        Iterator<XMLElement> iterator = elements.iterator();
-
+    public void write(Iterator<XMLElement> iterator, OutputStream outputStream) {
         while (iterator.hasNext()) {
             XMLElement element = iterator.next();
             String text = element.getText();

@@ -23,6 +23,6 @@ public class DataElement implements XMLElement {
 
     @Override
     public String toString() {
-        return "DataElement{" + "data='" + data + '\'' + '}';
+        return data;
     }
 }

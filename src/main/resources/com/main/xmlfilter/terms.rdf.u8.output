@@ -1,0 +1,21 @@
+<RDF xmlns:r="http://www.w3.org/TR/RDF/" xmlns:d="http://purl.org/dc/elements/1.0/" xmlns="http://dmoz.org/rdf/">
+	<Topic r:id="Top/Computers/History/Pioneers/Jobs,_Steve">
+		<d:term>Apple,Pixar,NeXT</d:term>
+	</Topic>
+	<Topic r:id="Top/Computers/Systems/Apple/Macintosh">
+		<d:term>apple</d:term>
+		<d:term>imac</d:term>
+		<d:term>mac</d:term>
+	</Topic>
+	<Topic r:id="Top/Computers/Systems/Apple/Macintosh/Development/Tools/Version_Control">
+		<d:term>CVS</d:term>
+		<d:term>RCS</d:term>
+	</Topic>
+	<Topic r:id="Top/Home/Cooking/Fruits_and_Vegetables/Apples">
+		<d:term>apple</d:term>
+	</Topic>
+	<Topic r:id="Top/World/Thai/à¸„à¸­à¸¡à¸žà¸´à¸§à¹€à¸•à¸­à¸£à¹Œ/à¸£à¸°à¸šà¸š/à¹à¸­à¸›à¹€à¸›à¸´à¸¥">
+		<d:term>apple</d:term>
+		<d:term>apple_computer</d:term>
+	</Topic>
+</RDF>
