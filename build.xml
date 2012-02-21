@@ -1,16 +1,17 @@
 <project name="xml-filter" basedir="." default="main">
 
     <property name="src.dir" value="src"/>
-    <property name="test.dir" value="test"/>
+    <property name="resource.dir" value="src/main/resources"/>
+    <property name="test.dir" value="src/test"/>
     <property name="lib.dir" value="lib"/>
     <property name="build.dir" value="build"/>
-    <property name="classes.dir" value="${build.dir}/classes"/>
-    <property name="tests.dir" value="${build.dir}/test"/>
-    <property name="jar.dir" value="${build.dir}/jar"/>
+    <property name="build.classes.dir" value="${build.dir}/classes"/>
+    <property name="build.jar.dir" value="${build.dir}/jar"/>
+    <property name="build.resources.dir" value="${build.dir}/resources"/>
 
-    <property name="main-class" value="FirstClass"/>
+    <property name="main-class" value="com.main.xmlfilter.sax.SAXReader"/>
 
-    <path id="application" location="${jar.dir}/${ant.project.name}.jar"/>
+    <path id="application" location="${build.jar.dir}/${ant.project.name}.jar"/>
 
     <path id="classpath">
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -20,14 +21,21 @@
         <delete dir="${build.dir}"/>
     </target>
 
-    <target name="compile">
-        <mkdir dir="${classes.dir}"/>
-        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" includeantruntime="false"/>
+    <target name="copy-resources">
+        <copy todir="${build.classes.dir}">
+            <fileset dir="${resource.dir}"/>
+        </copy>
+
+    </target>
+
+    <target name="compile" depends="copy-resources">
+        <mkdir dir="${build.classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}" classpathref="classpath" includeantruntime="false"/>
     </target>
 
     <target name="jar" depends="compile">
-        <mkdir dir="${jar.dir}"/>
-        <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+        <mkdir dir="${build.jar.dir}"/>
+        <jar destfile="${build.jar.dir}/${ant.project.name}.jar" basedir="${build.classes.dir}">
             <manifest>
                 <attribute name="Main-Class" value="${main-class}"/>
             </manifest>
@@ -44,13 +52,10 @@
     </target>
 
     <target name="test" depends="jar">
-        <mkdir dir="${tests.dir}"/>
-        <javac srcdir="${test.dir}" destdir="${tests.dir}" classpathref="classpath" includeantruntime="false"/>
         <junit printsummary="yes">
             <classpath>
                 <path refid="classpath"/>
                 <path refid="application"/>
-                <path location="${tests.dir}"/>
             </classpath>
 
             <batchtest fork="yes">

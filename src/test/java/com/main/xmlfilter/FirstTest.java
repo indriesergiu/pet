@@ -1,3 +1,5 @@
+package java.com.main.xmlfilter;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
