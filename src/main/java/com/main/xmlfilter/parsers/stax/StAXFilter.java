@@ -41,6 +41,11 @@ public class StAXFilter implements XmlFilter {
      */
     private boolean customNodeInserted = false;
 
+    /**
+     * app config
+     */
+    private Config config = Config.getInstance();
+
     public StAXFilter() {
         elements = new Stack<XMLElement>();
     }
@@ -91,13 +96,13 @@ public class StAXFilter implements XmlFilter {
         elements.push(new XMLElement(ElementType.START, reader.getPrefix(), reader.getLocalName(), null, attributes));
 
         // if search depth has not been reached, don't start searching
-        if (depth >= Config.getSearchDepth()) {
-            if (Config.match(filter, fullName)) {
+        if (depth >= config.getSearchDepth()) {
+            if (config.match(filter, fullName)) {
                 found = true;
                 lastFoundDepth = depth;
             } else if (attributes.size() > 0) {
                 for (String attributeName : attributes.keySet()) {
-                    if (Config.match(filter, attributes.get(attributeName)) || Config.match(filter, attributeName)) {
+                    if (config.match(filter, attributes.get(attributeName)) || config.match(filter, attributeName)) {
                         found = true;
                         lastFoundDepth = depth;
                         break;
@@ -121,13 +126,13 @@ public class StAXFilter implements XmlFilter {
         elements.push(new XMLElement(ElementType.END, reader.getPrefix(), reader.getLocalName(), null, null));
         depth--;
 
-        if (depth <= Config.getSearchDepth() && !found) {
+        if (depth <= config.getSearchDepth() && !found) {
             // if this depth is not the expected one, remove the one
             if (depth != lastFoundDepth - 1) {
                 // we are outside the search level and the filter has not been found, remove this node
                 popNode(qName);
             }
-        } else if (depth <= Config.getSearchDepth() && found) {
+        } else if (depth <= config.getSearchDepth() && found) {
             // the search level has been reached and a filter was found, leave the elements in the stack and continue search
             found = false;
 
@@ -150,7 +155,7 @@ public class StAXFilter implements XmlFilter {
             return;
         }
 
-        if (Config.match(filter, data)) {
+        if (config.match(filter, data)) {
             found = true;
             lastFoundDepth = depth;
         }
@@ -192,7 +197,7 @@ public class StAXFilter implements XmlFilter {
     }
 
     private void pushCustomNode() {
-        String name = Config.getInsertionName();
+        String name = config.getInsertionName();
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put(name + "Attr", name + "Value");
         elements.push(new XMLElement(ElementType.START, null, name, null, attributes));

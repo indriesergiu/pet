@@ -26,7 +26,7 @@ public class XmlFilterMain {
         if (args.length < 2 || args[1] == null || args[1].equals("")) {
             throw new IllegalArgumentException("No filter specified.");
         }
-        
+
         String filename = args[0];
         String filter = args[1];
         String outputFilename = args[2];
@@ -53,7 +53,7 @@ public class XmlFilterMain {
     private static void runFilter(String filename, String filter, String outputFilename, String inputNodeName, XmlFilter xmlFilter) throws IOException {
         MemoryTracker.getInstance().startTracking();
 
-        Config.setInsertionName(inputNodeName);
+        Config.getInstance().setInsertionName(inputNodeName);
         log("Processing file: " + filename);
 
         Date start = new Date();

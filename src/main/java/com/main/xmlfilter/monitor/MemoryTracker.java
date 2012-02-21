@@ -15,7 +15,7 @@ public class MemoryTracker implements Runnable {
     private static MemoryTracker INSTANCE = new MemoryTracker();
 
     private long maxUsage = 0;
-    private Integer lock = new Integer(0);
+    private Object lock = new Object();
 
     // scheduling support
     private ScheduledFuture<?> trackingTask;

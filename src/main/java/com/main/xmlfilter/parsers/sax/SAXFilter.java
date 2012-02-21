@@ -1,7 +1,7 @@
 package com.main.xmlfilter.parsers.sax;
 
-import com.main.xmlfilter.config.Config;
 import com.main.xmlfilter.XmlFilter;
+import com.main.xmlfilter.config.Config;
 import com.main.xmlfilter.parsers.sax.elements.DataElement;
 import com.main.xmlfilter.parsers.sax.elements.EndElement;
 import com.main.xmlfilter.parsers.sax.elements.StartElement;
@@ -58,6 +58,11 @@ public class SAXFilter extends DefaultHandler implements XmlFilter {
      */
     private boolean customNodeInserted = false;
 
+    /**
+     * app config
+     */
+    private Config config = Config.getInstance();
+
     public SAXFilter() {
         elements = new Stack<XMLElement>();
         writer = new XMLWriter();
@@ -77,13 +82,13 @@ public class SAXFilter extends DefaultHandler implements XmlFilter {
         elements.push(new StartElement(uri, localName, qName, buildAttributeMap(attributes)));
 
         // if search depth has not been reached, don't start searching
-        if (depth >= Config.getSearchDepth()) {
-            if (Config.match(filter, qName)) {
+        if (depth >= config.getSearchDepth()) {
+            if (config.match(filter, qName)) {
                 found = true;
                 lastFoundDepth = depth;
             } else if (attributes.getLength() > 0) {
                 for (int i = 0; i < attributes.getLength(); i++) {
-                    if (Config.match(filter, attributes.getValue(i)) || Config.match(filter, attributes.getQName(i))) {
+                    if (config.match(filter, attributes.getValue(i)) || config.match(filter, attributes.getQName(i))) {
                         found = true;
                         lastFoundDepth = depth;
                         break;
@@ -99,13 +104,13 @@ public class SAXFilter extends DefaultHandler implements XmlFilter {
         elements.push(new EndElement(uri, localName, qName));
         depth--;
 
-        if (depth <= Config.getSearchDepth() && !found) {
+        if (depth <= config.getSearchDepth() && !found) {
             // if this depth is not the expected one, remove the one
             if (depth != lastFoundDepth - 1) {
                 // we are outside the search level and the filter has not been found, remove this node
                 popNode(qName);
             }
-        } else if (depth <= Config.getSearchDepth() && found) {
+        } else if (depth <= config.getSearchDepth() && found) {
             // the search level has been reached and a filter was found, leave the elements in the stack and continue search
             found = false;
 
@@ -138,7 +143,7 @@ public class SAXFilter extends DefaultHandler implements XmlFilter {
             return;
         }
 
-        if (Config.match(filter, data)) {
+        if (config.match(filter, data)) {
             found = true;
             lastFoundDepth = depth;
         }
@@ -162,7 +167,7 @@ public class SAXFilter extends DefaultHandler implements XmlFilter {
     }
 
     private void pushCustomNode() {
-        String name = Config.getInsertionName();
+        String name = config.getInsertionName();
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put(name + "Attr", name + "Value");
         elements.push(new StartElement(null, null, name, attributes));

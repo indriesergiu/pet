@@ -1,5 +1,6 @@
 package com.main.xmlfilter.parsers.sax;
 
+import com.main.xmlfilter.config.Config;
 import com.main.xmlfilter.parsers.sax.elements.EndElement;
 import com.main.xmlfilter.parsers.sax.elements.StartElement;
 import com.main.xmlfilter.parsers.sax.elements.XMLElement;
@@ -15,7 +16,6 @@ import java.util.Iterator;
  */
 public class XMLWriter {
 
-    private static final String ENCODING = "UTF-8";
     private Class lastType;
     private int level = 0;
 
@@ -38,7 +38,7 @@ public class XMLWriter {
             lastType = element.getClass();
 
             try {
-                outputStream.write(text.getBytes(ENCODING));
+                outputStream.write(text.getBytes(Config.ENCODING));
             } catch (IOException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }

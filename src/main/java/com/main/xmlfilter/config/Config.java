@@ -7,29 +7,38 @@ package com.main.xmlfilter.config;
  */
 public class Config {
 
-    private static int searchDepth = 1;
+    private static Config INSTANCE = new Config();
+
+    private int searchDepth = 1;
 
     public static String ENCODING = "UTF-8";
 
-    private static String insertionName = "XMLFilter";
+    private String insertionName = "XMLFilter";
 
-    public static int getSearchDepth() {
+    private Config() {
+    }
+
+    public static Config getInstance() {
+        return INSTANCE;
+    }
+
+    public int getSearchDepth() {
         return searchDepth;
     }
 
-    public static void setSearchDepth(int searchDepth) {
-        Config.searchDepth = searchDepth;
+    public void setSearchDepth(int searchDepth) {
+        this.searchDepth = searchDepth;
     }
 
-    public static String getInsertionName() {
+    public String getInsertionName() {
         return insertionName;
     }
 
-    public static void setInsertionName(String insertionName) {
-        Config.insertionName = insertionName;
+    public void setInsertionName(String insertionName) {
+        this.insertionName = insertionName;
     }
 
-    public static boolean match(String filter, String data) {
+    public boolean match(String filter, String data) {
         return data.toLowerCase().contains(filter.toLowerCase());
     }
 }

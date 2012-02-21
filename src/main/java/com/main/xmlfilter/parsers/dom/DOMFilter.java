@@ -14,6 +14,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * XML Filter using DOM parser
@@ -27,6 +28,11 @@ public class DOMFilter implements XmlFilter {
     private boolean found = false;
     private boolean firstFound = false;
     private Document document;
+
+    /**
+     * app config
+     */
+    private Config config = Config.getInstance();
 
     public void filter(Reader reader, String filter, OutputStream outputStream) throws Exception {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -42,6 +48,8 @@ public class DOMFilter implements XmlFilter {
         TransformerFactory tFactory = TransformerFactory.newInstance();
         Transformer transformer = tFactory.newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
 
         DOMSource source = new DOMSource(doc);
         StreamResult result = new StreamResult(outputStream);
@@ -56,7 +64,7 @@ public class DOMFilter implements XmlFilter {
     private void process(Node node) {
         depth++;
 
-        if (depth >= Config.getSearchDepth()) {
+        if (depth >= config.getSearchDepth()) {
             switch (node.getNodeType()) {
                 case Node.ELEMENT_NODE:
                     handleElement(node);
@@ -80,23 +88,23 @@ public class DOMFilter implements XmlFilter {
         depth--;
 
         // if we just reached the search level and nothing has been found, delete the node
-        if (depth == Config.getSearchDepth() && !found) {
+        if (depth == config.getSearchDepth() && !found) {
             node.getParentNode().removeChild(node);
         }
         // if we just reached the search level and the filter was found for the first time, insert the custom node
-        else if (depth == Config.getSearchDepth() && found && !firstFound) {
+        else if (depth == config.getSearchDepth() && found && !firstFound) {
             insertCustomNode(node);
             firstFound = true;
         }
         // if we just reached the search level and the filter was found, reset the filter flag and leave the node alone
-        else if (depth == Config.getSearchDepth() && found) {
+        else if (depth == config.getSearchDepth() && found) {
             found = false;
         }
 
     }
 
     private void insertCustomNode(Node node) {
-        String name = Config.getInsertionName();
+        String name = config.getInsertionName();
         Element newNode = document.createElement(name);
         Attr attribute = document.createAttribute(name + "Attr");
         attribute.setValue(name + "Value");
@@ -115,19 +123,19 @@ public class DOMFilter implements XmlFilter {
     }
 
     private void handleText(Node node) {
-        if (Config.match(filter, node.getNodeValue())) {
+        if (config.match(filter, node.getNodeValue())) {
             found = true;
         }
     }
 
     private void handleAttribute(Node node) {
-        if (Config.match(filter, node.getNodeName()) || Config.match(filter, node.getNodeValue())) {
+        if (config.match(filter, node.getNodeName()) || config.match(filter, node.getNodeValue())) {
             found = true;
         }
     }
 
     private void handleElement(Node node) {
-        if (Config.match(filter, node.getNodeName())) {
+        if (config.match(filter, node.getNodeName())) {
             found = true;
         }
         if (node.hasAttributes()) {
