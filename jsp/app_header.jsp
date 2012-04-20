@@ -10,5 +10,6 @@
 <head><title>Simple jsp page</title></head>
 <body>
 <div style="background-color: #6495ed;color: white;font-family: Verdana; font-size: medium; ">XML Services JSP Client</div>
+<br>
 </body>
 </html>

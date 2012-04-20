@@ -72,7 +72,11 @@ public class SearchCriteria {
 
     @Override
     public String toString() {
-        return "SearchCriteria{" + "searchItems=" + searchItems + '}';
+        final StringBuilder sb = new StringBuilder();
+        sb.append("SearchCriteria");
+        sb.append("{searchItems=").append(searchItems);
+        sb.append('}');
+        return sb.toString();
     }
 
     public static void main(String[] args) throws IOException {

@@ -4,7 +4,6 @@ import com.main.httpclient.HttpClientException;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.servlet.http.Cookie;
-import java.util.Map;
 
 /**
  * Holds view fields from UI, calls the view service call and presents the call results(the page content) to the UI.
@@ -17,7 +16,6 @@ public class ViewBean extends AbstractBean {
 
     private static final String DEFAULT_START_PAGE = "0";
     private String page;
-    private Map<String, Cookie> cookieMap;
 
     public void view() throws HttpClientException {
         validate();
@@ -44,14 +42,6 @@ public class ViewBean extends AbstractBean {
         this.page = page;
     }
 
-    public Map<String, Cookie> getCookieMap() {
-        return cookieMap;
-    }
-
-    public void setCookieMap(Map<String, Cookie> cookieMap) {
-        this.cookieMap = cookieMap;
-    }
-
     public String getNextPage() {
         return String.valueOf(Integer.valueOf(page) + 1);
     }
@@ -69,5 +59,9 @@ public class ViewBean extends AbstractBean {
         sb.append(", cookieMap=").append(cookieMap);
         sb.append('}');
         return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(StringEscapeUtils.escapeHtml4("<option value=\"Attribute\">Attribute</option>\n" + "<option value=\"Data\">Data</option>"));
     }
 }

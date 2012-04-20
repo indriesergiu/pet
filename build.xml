@@ -34,7 +34,7 @@
     <property name="build.jar.dir" value="${build.dir}/jar"/>
 
     <!--Server properties-->
-    <property name="tomcat.home" value="d:/programe/apache-tomcat-7.0.22"/>
+    <property name="tomcat.home" value="d:/programe/apache-tomcat-7.0.26"/>
     <property name="deploy.dir" value="${tomcat.home}/webapps"/>
     <property name="server.name" value="xml_services"/>
     <property name="jsp.server.name" value="jsp_xml_services"/>
