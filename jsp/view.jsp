@@ -17,11 +17,13 @@
 <%--Include the app header--%>
 <%@ include file="app_header.jsp" %>
 
-<%--The toolbar--%>
-<a href="search_form.jsp">Search</a>
-
 <%--Call view service--%>
 <% viewBean.view(); %>
+
+<%--The toolbar--%>
+<a href="search_form.jsp">Search</a>
+<%--Option to update page content--%>
+<a href=<%= "update.jsp?page=" + viewBean.getPage() + "&pageContent=" + viewBean.getUrlEncodedPageContent() %>>Update page</a>
 
 <table>
 

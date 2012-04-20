@@ -1,10 +1,14 @@
 package com.main.htmlclient.beans;
 
+import com.main.httpclient.HttpClientException;
 import com.main.xmlfilter.search.SearchCriteria;
 import com.main.xmlfilter.search.SearchItem;
 import com.main.xmlfilter.search.SearchItemType;
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import javax.servlet.http.Cookie;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,11 +23,12 @@ public class SearchBean extends AbstractBean {
     private String page;
     private Map<String, String> parameters;
     private static final String DEFAULT_START_PAGE = "0";
+    private List<SearchParameter> searchParameters = new ArrayList<SearchParameter>();
 
-    public void search() {
+    public void search() throws HttpClientException {
         SearchCriteria searchCriteria = buildSearchCriteria(parameters);
         validate(searchCriteria);
-//        responseData = client.search(page, searchCriteria, cookieMap.values().toArray(new Cookie[0]));
+        responseData = client.search(page, searchCriteria, cookieMap.values().toArray(new Cookie[0]));
     }
 
     private void validate(SearchCriteria searchCriteria) {
@@ -49,7 +54,11 @@ public class SearchBean extends AbstractBean {
             if (parameters.containsKey(typeKey) && parameters.containsKey(valueKey)) {
                 String type = parameters.get(typeKey);
                 String value = parameters.get(valueKey);
-                searchCriteria.getSearchItems().add(new SearchItem(SearchItemType.valueOf(type), value));
+                searchCriteria.getSearchItems().add(new SearchItem(SearchItemType.valueOf(type.toUpperCase()), value));
+
+                // store the search parameters for next/previous links
+                searchParameters.add(new SearchParameter(typeKey, type));
+                searchParameters.add(new SearchParameter(valueKey, value));
             } else {
                 break;
             }
@@ -85,12 +94,21 @@ public class SearchBean extends AbstractBean {
         this.parameters = parameters;
     }
 
+    public List<SearchParameter> getSearchParameters() {
+        return searchParameters;
+    }
+
+    public void setSearchParameters(List<SearchParameter> searchParameters) {
+        this.searchParameters = searchParameters;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("SearchBean");
         sb.append("{page='").append(page).append('\'');
         sb.append(", parameters=").append(parameters);
+        sb.append(", searchParameters=").append(searchParameters);
         sb.append('}');
         return sb.toString();
     }

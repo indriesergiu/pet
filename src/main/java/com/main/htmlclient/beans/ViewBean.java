@@ -4,6 +4,8 @@ import com.main.httpclient.HttpClientException;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.servlet.http.Cookie;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Holds view fields from UI, calls the view service call and presents the call results(the page content) to the UI.
@@ -32,6 +34,10 @@ public class ViewBean extends AbstractBean {
 
     public String getPageContent() {
         return StringEscapeUtils.escapeHtml4(responseData.getBody());
+    }
+
+    public String getUrlEncodedPageContent() throws UnsupportedEncodingException {
+        return URLEncoder.encode(StringEscapeUtils.escapeHtml4(responseData.getBody()), "UTF-8");
     }
 
     public String getPage() {

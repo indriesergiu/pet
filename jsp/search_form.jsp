@@ -70,13 +70,13 @@
 <form action="search_result.jsp" method="POST">
     <div id="searchCriteria">
         <label>Type</label>
-        <select name="type1">
+        <select name="type0">
             <option value="Attribute">Attribute</option>
             <option value="Data">Data</option>
         </select>
 
         <label>Value</label>
-        <input name="value1" type="text"/>
+        <input name="value0" type="text"/>
     </div>
     <br>
     <input type="button" value="Add rule" onselect="AddRule" onclick="AddRule();">
@@ -84,7 +84,7 @@
 </form>
 
 <%--Holds the searchRule index (invisible)--%>
-<div id="searchRuleIndex" title="1"/>
+<div id="searchRuleIndex" title="0"/>
 
 </body>
 </html>

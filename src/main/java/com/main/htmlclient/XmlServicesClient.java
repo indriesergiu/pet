@@ -2,20 +2,20 @@ package com.main.htmlclient;
 
 import com.main.httpclient.ClientConstants;
 import com.main.httpclient.HttpClientException;
-import com.main.httpclient.context.Context;
+import com.main.xmlfilter.search.SearchCriteria;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.servlet.http.Cookie;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Used by the JSP to query the XML Services server.
@@ -34,10 +34,11 @@ public class XmlServicesClient {
     private static final String HTTP_HEADER_ACCEPT_ENCODING = "Accept-Encoding";
     private static final String HTTP_HEADER_CONTENT_TYPE = "Content-Type";
 
-    private Context context;
     private Logger logger = Logger.getLogger(XmlServicesClient.class);
 
     private static XmlServicesClient singleton = new XmlServicesClient();
+
+    private static ObjectMapper jsonConverter = new ObjectMapper();
 
     private XmlServicesClient() {
         // TODO sergiu.indrie - add log conf file
@@ -112,6 +113,56 @@ public class XmlServicesClient {
         }
     }
 
+    public ResponseData search(String page, SearchCriteria searchCriteria, Cookie[] cookies) throws HttpClientException {
+        try {
+            String charset = ClientConstants.DEFAULT_ENCODING;
+            String query = String.format("page=%s", URLEncoder.encode(page, charset));
+            String fullUrl = SERVER_URL + "search?" + query;
+
+            URL url = new URL(fullUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            // set cookies
+            String cookiesAsString = getCookiesAsString(cookies);
+            if (cookies != null && !(cookies.length < 0)) {
+                connection.setRequestProperty("Cookie", cookiesAsString);
+                logger.debug("Adding cookies:{" + cookiesAsString + "} to request.");
+            }
+
+            // convert searchCriteria object to string
+            String searchCriteriaInJson = jsonConverter.writeValueAsString(searchCriteria);
+
+            // send search criteria
+            Closeable outputStreamWriter = sendCompressedRequestBody(connection, searchCriteriaInJson);
+
+            // check request status
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                logger.info("Request was not successfully answered. Status code " + responseCode + " and message: " + connection.getResponseMessage());
+                outputStreamWriter.close();
+                return new ResponseData(connection.getResponseMessage(), responseCode);
+            }
+
+            String result = getCompressedResponseContent(connection);
+            outputStreamWriter.close();
+
+            ResponseData responseData = new ResponseData(result, responseCode, connection.getResponseMessage());
+
+            // if cache header is present store the resource
+            String cacheControlHeader = connection.getHeaderField(HTTP_HEADER_CACHE_CONTROL);
+            if (cacheControlHeader != null) {
+                responseData.getHeader().put(HTTP_HEADER_CACHE_CONTROL, cacheControlHeader);
+            }
+
+            return responseData;
+
+        } catch (Exception e) {
+            throw new HttpClientException("An error has occurred during authentication.", e);
+        }
+    }
+
+
     private String getCookiesAsString(Cookie[] cookies) {
         StringBuilder result = new StringBuilder();
         for (Cookie cookie : cookies) {
@@ -149,5 +200,19 @@ public class XmlServicesClient {
         }
         in.close();
         return result.toString();
+    }
+
+    private Closeable sendCompressedRequestBody(HttpURLConnection connection, String requestBody) throws IOException {
+        connection.setDoOutput(true);
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty(HTTP_HEADER_ACCEPT_ENCODING, "gzip");
+        connection.setRequestProperty(HTTP_HEADER_CONTENT_TYPE, "application/gzip");
+        OutputStream outputStream = connection.getOutputStream();
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(gzipOutputStream);
+        outputStreamWriter.write(requestBody);
+        outputStreamWriter.flush();
+        outputStreamWriter.close();
+        return gzipOutputStream;
     }
 }
