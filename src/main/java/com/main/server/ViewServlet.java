@@ -49,6 +49,15 @@ public class ViewServlet extends HttpServlet {
             return;
         }
 
+        if (pageContent == null || pageContent.trim().isEmpty()) {
+            log.warn("The view result is empty");
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "The view result is empty");
+            return;
+        }
+
+        // set cache header
+        HttpUtils.addMaxAgeCache(resp, ServerConstants.RESOURCE_MAX_AGE);
+
         // set page content in response body
         resp.getOutputStream().print(pageContent);
     }

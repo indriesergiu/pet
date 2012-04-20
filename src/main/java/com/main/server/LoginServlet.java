@@ -49,6 +49,7 @@ public class LoginServlet extends HttpServlet {
         if (login(user, pass)) {
             log.info("User " + user + " was successfully authenticated.");
             addSessionCookie(context, resp);
+            resp.setStatus(HttpServletResponse.SC_ACCEPTED);
         } else {
             log.info("User " + user + " failed to be authenticated.");
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "You must be authenticated to perform this operation.");

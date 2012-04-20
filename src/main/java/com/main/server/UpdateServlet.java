@@ -53,6 +53,7 @@ public class UpdateServlet extends HttpServlet {
             log.info("Updating page " + page + " with page content:\n" + pageContent);
             Writer writer = new BufferedWriter(new FileWriter(updateFile));
             XmlService.updatePage(page, pageContent, inputStream, writer);
+            inputStream.close();
         } catch (XmlServiceException e) {
             log.error("An error occurred while processing the update command.", e);
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -84,6 +85,8 @@ public class UpdateServlet extends HttpServlet {
             return;
         }
         FileUtils.moveFile(updateFile, dataFile);
+
+        log.info("Update complete.");
     }
 
     private String getPageContent(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletLevelException {

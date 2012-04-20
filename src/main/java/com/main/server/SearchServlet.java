@@ -53,6 +53,15 @@ public class SearchServlet extends HttpServlet {
             return;
         }
 
+        if (searchedPageContent == null || searchedPageContent.trim().isEmpty()) {
+            log.warn("The search result is empty");
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "The search result is empty");
+            return;
+        }
+
+         // set cache header
+        HttpUtils.addMaxAgeCache(resp, ServerConstants.RESOURCE_MAX_AGE);
+
         resp.getOutputStream().print(searchedPageContent);
     }
 

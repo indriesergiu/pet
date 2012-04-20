@@ -33,8 +33,6 @@
     <property name="build.classes.dir" value="${build.dir}/classes"/>
     <property name="build.jar.dir" value="${build.dir}/jar"/>
 
-
-
     <!--Server properties-->
     <property name="tomcat.home" value="d:/programe/apache-tomcat-7.0.22"/>
     <property name="deploy.dir" value="${tomcat.home}/webapps"/>
@@ -80,8 +78,10 @@
     <property environment="env"/>
 
     <target name="deploy" depends="war">
+        <delete file="${deploy.dir}/${server.name}"/>
+        <delete file="${deploy.dir}/${server.name}.war"/>
         <copy file="${build.dir}/${server.name}.war" toDir="${deploy.dir}"/>
-        <exec executable="${tomcat.home}\bin\startup.bat" />
+        <exec executable="${tomcat.home}\bin\startup.bat"/>
     </target>
 
     <target name="run" depends="jar">
