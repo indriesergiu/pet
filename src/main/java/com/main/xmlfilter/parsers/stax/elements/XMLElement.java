@@ -164,6 +164,7 @@ public class XmlElement {
                 result.append(" " + entry.getKey() + "=\"" + entry.getValue() + "\"");
             }
         }
+        result.append('>');
     }
 
     @Override

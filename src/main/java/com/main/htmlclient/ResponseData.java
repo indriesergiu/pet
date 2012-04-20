@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
+ * Response object returned by the {@link XmlServicesClient} calls.
  *
  * @author Sergiu Indrie
  */

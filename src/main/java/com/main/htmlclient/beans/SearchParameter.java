@@ -1,7 +1,7 @@
 package com.main.htmlclient.beans;
 
 /**
- * Created by IntelliJ IDEA.
+ * Used by the {@link SearchBean}.
  *
  * @author Sergiu Indrie
  */

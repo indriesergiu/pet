@@ -57,6 +57,8 @@ public class ViewServlet extends HttpServlet {
             return;
         }
 
+        log.debug("Page content is \n" + pageContent);
+
         // set cache header
         HttpUtils.addMaxAgeCache(resp, HttpUtils.RESOURCE_MAX_AGE);
 

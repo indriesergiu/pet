@@ -5,7 +5,7 @@ import com.main.httpclient.HttpClientException;
 import javax.servlet.http.Cookie;
 
 /**
- * Created by IntelliJ IDEA.
+ * Performs the update of page contents using the {@link com.main.htmlclient.XmlServicesClient} 'update' call.
  *
  * @author Sergiu Indrie
  */

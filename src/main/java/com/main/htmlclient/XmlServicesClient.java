@@ -24,7 +24,6 @@ import java.util.zip.GZIPOutputStream;
 public class XmlServicesClient {
 
     private static final String SERVER_URL = "http://localhost:8080/xml_services/";
-    //    private static final String SERVER_URL = "http://localhost:8080/";
     private static final String GZIP_ENCODING = "gzip";
 
     //    HTTP headers
@@ -223,7 +222,6 @@ public class XmlServicesClient {
     }
 
     private String getCompressedResponseContent(HttpURLConnection connection) throws IOException {
-        // TODO sergiu.indrie - check type of compression
         BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(connection.getInputStream())));
         StringBuilder result = new StringBuilder();
         String temp;

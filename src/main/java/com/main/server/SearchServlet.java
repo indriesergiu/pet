@@ -63,6 +63,8 @@ public class SearchServlet extends HttpServlet {
             return;
         }
 
+        log.debug("Search page content is \n" + searchedPageContent);
+
         // set cache header
         HttpUtils.addMaxAgeCache(resp, HttpUtils.RESOURCE_MAX_AGE);
 

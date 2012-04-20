@@ -64,6 +64,9 @@ public class SearchCommand implements Command {
             currentLineContent.append(element.toXml());
 
             switch (element.getType()) {
+                case START_DOCUMENT:
+                    handleStartDocument();
+                    break;
                 case START_ELEMENT:
                     handleStartElement(element);
                     break;
@@ -74,6 +77,13 @@ public class SearchCommand implements Command {
 
             element = commandParser.getNextElement();
         }
+    }
+
+    private void handleStartDocument() {
+        // complete current line
+        currentLine++;
+        currentPageLines.add(currentLineContent.toString() + "\n");
+        currentLineContent = new StringBuilder();
     }
 
     private void handleStartElement(XmlElement element) {
@@ -144,13 +154,13 @@ public class SearchCommand implements Command {
     }
 
     public static void main(String[] args) throws Exception {
-        String filename = "D:\\sample.xml";
-        String filter = "apple";
+        String filename = "D:\\down\\temp\\content.example.txt";
+        String filter = "gam";
         InputStream inputStream = new FileInputStream(filename);
         Reader reader = new InputStreamReader(inputStream, Config.ENCODING);
 
         CommandParser commandParser = new StAXGenericParser(reader);
-        SearchCommand cmd = new SearchCommand(commandParser, SearchCriteria.createSearchCriteriaFromValue(filter), 3);
+        SearchCommand cmd = new SearchCommand(commandParser, SearchCriteria.createSearchCriteriaFromValue(filter), 0);
         cmd.execute();
 
         System.out.println(cmd.getRequestedPageContent());
