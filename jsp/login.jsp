@@ -2,7 +2,7 @@
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <title>Login</title>
+    <title>Login - XML Services JSP Client</title>
 </head>
 <body>
 

@@ -3,6 +3,7 @@ package com.main.htmlclient;
 import com.main.httpclient.ClientConstants;
 import com.main.httpclient.HttpClientException;
 import com.main.httpclient.context.Context;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.Cookie;
@@ -23,8 +24,8 @@ import java.util.zip.GZIPInputStream;
  */
 public class XmlServicesClient {
 
-        private static final String SERVER_URL = "http://localhost:8080/xml_services/";
-//    private static final String SERVER_URL = "http://localhost:8080/";
+    private static final String SERVER_URL = "http://localhost:8080/xml_services/";
+    //    private static final String SERVER_URL = "http://localhost:8080/";
     private static final String GZIP_ENCODING = "gzip";
 
     //    HTTP headers
@@ -39,7 +40,8 @@ public class XmlServicesClient {
     private static XmlServicesClient singleton = new XmlServicesClient();
 
     private XmlServicesClient() {
-
+        // TODO sergiu.indrie - add log conf file
+        BasicConfigurator.configure();
     }
 
     public static XmlServicesClient getClient() {
@@ -55,7 +57,7 @@ public class XmlServicesClient {
 
             ResponseData responseData = new ResponseData(connection.getResponseMessage(), connection.getResponseCode());
 
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_ACCEPTED){
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_ACCEPTED) {
                 Cookie[] cookies = getCookies(connection.getHeaderField(HTTP_HEADER_SET_COOKIE));
                 responseData.setCookies(cookies);
             }
@@ -95,7 +97,7 @@ public class XmlServicesClient {
 
             String result = getCompressedResponseContent(connection);
 
-            ResponseData responseData = new ResponseData(connection.getResponseMessage(), responseCode, result);
+            ResponseData responseData = new ResponseData(result, responseCode, connection.getResponseMessage());
 
             // if cache header is present store the resource
             String cacheControlHeader = connection.getHeaderField(HTTP_HEADER_CACHE_CONTROL);

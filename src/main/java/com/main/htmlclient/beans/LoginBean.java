@@ -1,24 +1,16 @@
-package com.main.htmlclient.form;
+package com.main.htmlclient.beans;
 
-import com.main.htmlclient.ResponseData;
-import com.main.htmlclient.XmlServicesClient;
 import com.main.httpclient.HttpClientException;
 
-import javax.servlet.http.Cookie;
-
 /**
- * Created by IntelliJ IDEA.
+ * Holds login fields from UI, calls the login service call and presents the call results to the UI.
  *
  * @author Sergiu Indrie
  */
-public class LoginData {
+public class LoginBean extends AbstractBean {
 
     private String username;
     private String password;
-
-    private ResponseData responseData;
-
-    private XmlServicesClient client = XmlServicesClient.getClient();
 
     public void login() throws HttpClientException {
         responseData = client.login(username, password);
@@ -40,26 +32,10 @@ public class LoginData {
         this.password = password;
     }
 
-    public boolean getSuccess() {
-        return responseData.getCode() == 202;
-    }
-
-    public int getResponseStatusCode() {
-        return responseData.getCode();
-    }
-
-    public String getResponseMessage() {
-        return responseData.getMessage();
-    }
-
-    public Cookie[] getCookies() {
-        return responseData.getCookies();
-    }
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("LoginData");
+        sb.append("LoginBean");
         sb.append("{username='").append(username).append('\'');
         sb.append(", password='").append(password).append('\'');
         sb.append('}');

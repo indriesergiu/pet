@@ -28,6 +28,7 @@ public class ResponseData {
         this.body = body;
         this.code = code;
         this.message = message;
+        header = new HashMap<String, String>();
     }
 
     public Cookie[] getCookies() {

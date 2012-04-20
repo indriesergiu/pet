@@ -10,6 +10,10 @@
 <html>
 <head><title>Server Error</title></head>
 <body>
+
+<%--Include the app header--%>
+<%@ include file="app_header.jsp" %>
+
 <p>Error status code: ${pageContext.errorData.statusCode} </p>
 
 <p>Exception: ${pageContext.errorData.throwable}</p>
@@ -17,6 +21,8 @@
 <p>Cause: ${pageContext.errorData.throwable.cause}</p>
 
 <%-- TODO Consider using resource bundles for messages with <fmt:message key="ServerError"/>--%>
+
+<%--TODO add links to login (if not auth) or view (if auth)--%>
 
 <%--<jsp:text>--%>
 <%--what are these?--%>
