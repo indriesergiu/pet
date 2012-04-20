@@ -140,7 +140,6 @@ public class HttpClient {
             outputStreamWriter.write(searchCriteriaInJson);
             outputStreamWriter.flush();
 
-
             // check request status
             int responseCode = connection.getResponseCode();
 

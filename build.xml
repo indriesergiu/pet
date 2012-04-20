@@ -38,12 +38,20 @@
     <property name="deploy.dir" value="${tomcat.home}/webapps"/>
     <property name="server.name" value="xml_services"/>
 
+    <!--http client console-->
+    <property name="src.clientconsole.dir" value="${src.dir}/main/java/com/main/httpclient"/>
+    <property name="lib.clientconsole.dir" value="${lib.dir}/client"/>
+
     <property name="main-class" value="com.main.xmlfilter.XmlFilterMain"/>
 
     <path id="application" location="${build.jar.dir}/${ant.project.name}.jar"/>
 
     <path id="classpath">
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+
+    <path id="client-console-classpath">
+        <fileset dir="${lib.clientconsole.dir}" includes="**/*.jar"/>
     </path>
 
     <target name="clean">
@@ -98,6 +106,23 @@
             <arg value="${gzip}"/>
             <arg value="${memoryTracker}"/>
             <arg value="${help}"/>
+        </java>
+    </target>
+
+    <target name="client-console" depends="clean">
+        <mkdir dir="${build.dir}/client-console"/>
+        <javac srcdir="${src.clientconsole.dir}" destdir="${build.dir}/client-console" includeantruntime="false">
+            <classpath>
+                <path refid="client-console-classpath"/>
+            </classpath>
+        </javac>
+        <java classname="com.main.httpclient.HttpClientConsole">
+            <classpath>
+                <path refid="client-console-classpath"/>
+                <path>
+                    <pathelement location="${build.dir}/client-console"/>
+                </path>
+            </classpath>
         </java>
     </target>
 

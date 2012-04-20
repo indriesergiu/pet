@@ -140,7 +140,11 @@ public class HttpClientConsole {
 
     public static void main(String[] args) throws IOException, HttpClientException {
         HttpClientConsole httpClientConsole = new HttpClientConsole();
+        httpClientConsole.printToConsole("HTTP Client-Console started\n");
+
+        httpClientConsole.printToConsole("Auto-login is enabled");
         httpClientConsole.httpClient.login("Guest", "GuestPass");   // auto-login
+
         httpClientConsole.run();
     }
 }
