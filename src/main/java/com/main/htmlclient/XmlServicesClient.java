@@ -191,12 +191,6 @@ public class XmlServicesClient {
             outputStreamWriter.close();
             ResponseData responseData = new ResponseData("", responseCode, connection.getResponseMessage());
 
-            // if cache header is present store the resource
-            String cacheControlHeader = connection.getHeaderField(HTTP_HEADER_CACHE_CONTROL);
-            if (cacheControlHeader != null) {
-                responseData.getHeader().put(HTTP_HEADER_CACHE_CONTROL, cacheControlHeader);
-            }
-
             return responseData;
 
         } catch (Exception e) {

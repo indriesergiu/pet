@@ -28,10 +28,6 @@ public class UpdateBean extends AbstractBean {
         }
     }
 
-    public boolean getSuccess() {
-        return responseData.getCode() == 200;
-    }
-
     public String getPage() {
         return page;
     }

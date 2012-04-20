@@ -5,6 +5,8 @@ import com.main.htmlclient.XmlServicesClient;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.Cookie;
+import java.net.HttpURLConnection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -20,7 +22,15 @@ public class AbstractBean {
     protected Map<String, Cookie> cookieMap;
 
     public boolean getSuccess() {
-        return responseData.getCode() == 202;
+        return responseData.getCode() == HttpURLConnection.HTTP_OK;
+    }
+
+    public boolean isUnauthenticated() {
+        return responseData.getCode() == HttpURLConnection.HTTP_UNAUTHORIZED;
+    }
+
+    public boolean isNotFound() {
+        return responseData.getCode() == HttpURLConnection.HTTP_NOT_FOUND;
     }
 
     public int getResponseStatusCode() {
@@ -41,5 +51,12 @@ public class AbstractBean {
 
     public void setCookieMap(Map<String, Cookie> cookieMap) {
         this.cookieMap = cookieMap;
+    }
+
+    public Map<String, String> getHeaderMap() {
+        if (responseData == null) {
+            return Collections.emptyMap();
+        }
+        return responseData.getHeader();
     }
 }

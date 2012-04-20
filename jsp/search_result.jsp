@@ -25,6 +25,11 @@
 <%--Call view service--%>
 <% searchBean.search(); %>
 
+<%--Authentication check--%>
+<c:if test="${searchBean.unauthenticated}">
+    <jsp:forward page="login.jsp"/>
+</c:if>
+
 <table>
 
     <tr>
@@ -38,9 +43,7 @@
     <tr>
         <td>
             <%--Page content displayed in text area--%>
-            <textarea rows="27" cols="100" readonly="readonly">
-                <%= searchBean.getPageContent() %>
-            </textarea>
+            <textarea rows="27" cols="100" readonly="readonly"><%= searchBean.getPageContent() %></textarea>
             <br>
         </td>
     </tr>
@@ -83,6 +86,13 @@
         </td>
     </tr>
 </table>
+
+<%--add headers from response data--%>
+<%
+    for (String headerKey : searchBean.getHeaderMap().keySet()) {
+        response.addHeader(headerKey, searchBean.getHeaderMap().get(headerKey));
+    }
+%>
 
 </body>
 </html>

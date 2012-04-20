@@ -5,6 +5,7 @@
   Time: 3:56 PM
   To change this template use File | Settings | File Templates.
 --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page errorPage="error.jsp" %>
 <jsp:useBean id="updateBean" class="com.main.htmlclient.beans.UpdateBean" scope="session"/>
@@ -37,9 +38,7 @@
         <tr>
             <td>
                 <%--Page content displayed in text area--%>
-                <textarea name="pageContent" rows="27" cols="100">
-                    <%= updateBean.getPageContent() %>
-                </textarea>
+                <textarea name="pageContent" rows="27" cols="100"><%= updateBean.getPageContent() %></textarea>
                 <br>
             </td>
         </tr>

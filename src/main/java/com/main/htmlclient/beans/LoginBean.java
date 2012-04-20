@@ -2,6 +2,8 @@ package com.main.htmlclient.beans;
 
 import com.main.httpclient.HttpClientException;
 
+import java.net.HttpURLConnection;
+
 /**
  * Holds login fields from UI, calls the login service call and presents the call results to the UI.
  *
@@ -14,6 +16,10 @@ public class LoginBean extends AbstractBean {
 
     public void login() throws HttpClientException {
         responseData = client.login(username, password);
+    }
+
+    public boolean getSuccess() {
+        return responseData.getCode() == HttpURLConnection.HTTP_ACCEPTED;
     }
 
     public String getUsername() {

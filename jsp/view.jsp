@@ -5,6 +5,7 @@
   Time: 3:56 PM
   To change this template use File | Settings | File Templates.
 --%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page errorPage="error.jsp" %>
 <jsp:useBean id="viewBean" class="com.main.htmlclient.beans.ViewBean" scope="session"/>
@@ -25,6 +26,11 @@
 <%--Option to update page content--%>
 <a href=<%= "update.jsp?page=" + viewBean.getPage() + "&pageContent=" + viewBean.getUrlEncodedPageContent() %>>Update page</a>
 
+<%--Authentication check--%>
+<c:if test="${viewBean.unauthenticated}">
+    <jsp:forward page="login.jsp"/>
+</c:if>
+
 <table>
 
     <tr>
@@ -37,11 +43,15 @@
 
     <tr>
         <td>
-            <%--Page content displayed in text area--%>
-            <textarea rows="27" cols="100" readonly="readonly">
-                <%= viewBean.getPageContent() %>
-            </textarea>
-            <br>
+            <c:if test="${viewBean.success}">
+                <%--Page content displayed in text area--%>
+                <textarea rows="27" cols="100" readonly="readonly"><%= viewBean.getPageContent() %></textarea>
+                <%--<br>--%>
+            </c:if>
+            <c:if test="${viewBean.notFound}">
+                <%--Not found error message--%>
+                <textarea rows="27" cols="100" readonly="readonly">Page ${viewBean.page} was not found.</textarea>
+            </c:if>
         </td>
     </tr>
 
@@ -62,7 +72,12 @@
     </tr>
 </table>
 
-<%--TODO add headers from response data--%>
+<%--add headers from response data--%>
+<%
+    for (String headerKey : viewBean.getHeaderMap().keySet()) {
+        response.addHeader(headerKey, viewBean.getHeaderMap().get(headerKey));
+    }
+%>
 
 </body>
 </html>

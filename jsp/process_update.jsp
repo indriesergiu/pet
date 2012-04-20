@@ -24,6 +24,11 @@
 
 <% updateBean.update(); %>
 
+<%--Authentication check--%>
+<c:if test="${updateBean.unauthenticated}">
+    <jsp:forward page="login.jsp"/>
+</c:if>
+
 <%--Display the call outcome--%>
 <c:choose>
     <c:when test="${updateBean.success}">
