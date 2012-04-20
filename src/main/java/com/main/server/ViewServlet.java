@@ -26,8 +26,6 @@ public class ViewServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, java.io.IOException {
         ServletContext context = req.getServletContext();
         String pathToDataFile = context.getInitParameter(ServerConstants.DMOZ_DATA_FILE);
-        InputStream inputStream = new FileInputStream(pathToDataFile);
-
 
         // obtain request parameters
         int page;
@@ -39,14 +37,18 @@ public class ViewServlet extends HttpServlet {
         }
 
         String pageContent;
-        try {
-            // consider the need for thread safety
-            log.info("Obtaining page " + page);
-            pageContent = XmlService.getPage(page, inputStream);
-        } catch (XmlServiceException e) {
-            log.error("An error occurred while processing the view command.", e);
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return;
+
+        synchronized (this) {
+            InputStream inputStream = new FileInputStream(pathToDataFile);
+            try {
+                // consider the need for thread safety
+                log.info("Obtaining page " + page);
+                pageContent = XmlService.getPage(page, inputStream);
+            } catch (XmlServiceException e) {
+                log.error("An error occurred while processing the view command.", e);
+                resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
+            }
         }
 
         if (pageContent == null || pageContent.trim().isEmpty()) {

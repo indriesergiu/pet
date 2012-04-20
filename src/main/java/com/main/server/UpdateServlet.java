@@ -30,7 +30,6 @@ public class UpdateServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, java.io.IOException {
         ServletContext context = req.getServletContext();
         String pathToDataFile = context.getInitParameter(ServerConstants.DMOZ_DATA_FILE);
-        InputStream inputStream = new FileInputStream(pathToDataFile);
 
         // obtain request parameters
         int page;
@@ -43,17 +42,20 @@ public class UpdateServlet extends HttpServlet {
             return;
         }
 
-        updateFile(req, resp, pathToDataFile, inputStream, page, pageContent);
+        updateFile(req, resp, pathToDataFile, page, pageContent);
     }
 
-    private void updateFile(HttpServletRequest req, HttpServletResponse resp, String pathToDataFile, InputStream inputStream, int page, String pageContent) throws IOException {
+    private synchronized void updateFile(HttpServletRequest req, HttpServletResponse resp, String pathToDataFile, int page, String pageContent) throws IOException {
         File updateFile = getUpdateFile(req);
+
+        InputStream inputStream = new FileInputStream(pathToDataFile);
         try {
             // consider the need for thread safety
             log.info("Updating page " + page + " with page content:\n" + pageContent);
             Writer writer = new BufferedWriter(new FileWriter(updateFile));
             XmlService.updatePage(page, pageContent, inputStream, writer);
             inputStream.close();
+            writer.close();
         } catch (XmlServiceException e) {
             log.error("An error occurred while processing the update command.", e);
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

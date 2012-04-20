@@ -30,7 +30,7 @@ public class SearchServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, java.io.IOException {
         ServletContext context = req.getServletContext();
         String pathToDataFile = context.getInitParameter(ServerConstants.DMOZ_DATA_FILE);
-        InputStream inputStream = new FileInputStream(pathToDataFile);
+
 
         // obtain request parameters
         int page;
@@ -44,13 +44,17 @@ public class SearchServlet extends HttpServlet {
         }
 
         String searchedPageContent;
-        try {
-            log.info("Searching page " + page + " with search criteria:\n" + searchCriteria);
-            searchedPageContent = XmlService.search(searchCriteria, page, inputStream);
-        } catch (XmlServiceException e) {
-            log.error("An error occurred while processing the search command.", e);
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return;
+
+        synchronized (this) {
+            InputStream inputStream = new FileInputStream(pathToDataFile);
+            try {
+                log.info("Searching page " + page + " with search criteria:\n" + searchCriteria);
+                searchedPageContent = XmlService.search(searchCriteria, page, inputStream);
+            } catch (XmlServiceException e) {
+                log.error("An error occurred while processing the search command.", e);
+                resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
+            }
         }
 
         if (searchedPageContent == null || searchedPageContent.trim().isEmpty()) {
@@ -59,7 +63,7 @@ public class SearchServlet extends HttpServlet {
             return;
         }
 
-         // set cache header
+        // set cache header
         HttpUtils.addMaxAgeCache(resp, HttpUtils.RESOURCE_MAX_AGE);
 
         resp.getOutputStream().print(searchedPageContent);

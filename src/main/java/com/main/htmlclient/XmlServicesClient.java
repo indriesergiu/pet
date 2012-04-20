@@ -3,7 +3,6 @@ package com.main.htmlclient;
 import com.main.httpclient.ClientConstants;
 import com.main.httpclient.HttpClientException;
 import com.main.xmlfilter.search.SearchCriteria;
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -41,8 +40,6 @@ public class XmlServicesClient {
     private static ObjectMapper jsonConverter = new ObjectMapper();
 
     private XmlServicesClient() {
-        // TODO sergiu.indrie - add log conf file
-        BasicConfigurator.configure();
     }
 
     public static XmlServicesClient getClient() {

@@ -8,4 +8,11 @@
         Offers XML filter services through a JSP Client
     </description>
 
+    <!--used for logging init-->
+    <listener>
+        <listener-class>
+            com.main.htmlclient.ApplicationServletContextListener
+        </listener-class>
+    </listener>
+
 </web-app>

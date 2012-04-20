@@ -21,8 +21,6 @@ public class XmlService {
 
     private static final Logger log = Logger.getLogger(XmlService.class);
 
-    // TODO sergiu.indrie - protect shared resource
-
     public static String getPage(int pageNumber, InputStream inputStream) throws XmlServiceException {
         try {
             Reader reader = new InputStreamReader(inputStream, Config.ENCODING);
@@ -30,12 +28,18 @@ public class XmlService {
             GetPageCommand cmd = new GetPageCommand(pageNumber, reader);
             cmd.execute();
 
-            inputStream.close();
             return cmd.getRequestedPageContent();
 
         } catch (Exception e) {
             log.error("An error has occurred while calling getPage with pageNumber=" + pageNumber, e);
             throw new XmlServiceException("Page number " + pageNumber + " could not be obtained.");
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                log.error("An error has occurred while calling getPage with pageNumber=" + pageNumber, e);
+                throw new XmlServiceException("Page number " + pageNumber + " could not be obtained.");
+            }
         }
     }
 
@@ -51,8 +55,14 @@ public class XmlService {
         } catch (Exception e) {
             log.error("An error has occurred while calling updatePage with pageNumber=" + pageNumber, e);
             throw new XmlServiceException("Page number " + pageNumber + " could not be updated.");
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                log.error("An error has occurred while calling updatePage with pageNumber=" + pageNumber, e);
+                throw new XmlServiceException("Page number " + pageNumber + " could not be updated.");
+            }
         }
-
     }
 
     public static boolean isWellFormed(InputStream inputStream) throws XmlServiceException {
@@ -61,11 +71,18 @@ public class XmlService {
         try {
             inputStream.close();
             reader.close();
+            return cmd.isWellFormed();
         } catch (IOException e) {
             log.error("An error has occurred while calling isWellFormed", e);
             throw new XmlServiceException("The well-formed check could not be successfully performed.");
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                log.error("An error has occurred while calling isWellFormed", e);
+                throw new XmlServiceException("The well-formed check could not be successfully performed.");
+            }
         }
-        return cmd.isWellFormed();
     }
 
     public static String search(SearchCriteria searchCriteria, int pageNumber, InputStream inputStream) throws XmlServiceException {
@@ -79,6 +96,13 @@ public class XmlService {
         } catch (Exception e) {
             log.error("An error has occurred while calling search with searchCriteria=" + searchCriteria + " and pageNumber=" + pageNumber, e);
             throw new XmlServiceException("The well-formed check could not be successfully performed.");
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                log.error("An error has occurred while calling search with searchCriteria=" + searchCriteria + " and pageNumber=" + pageNumber, e);
+                throw new XmlServiceException("The well-formed check could not be successfully performed.");
+            }
         }
 
         return cmd.getRequestedPageContent();
