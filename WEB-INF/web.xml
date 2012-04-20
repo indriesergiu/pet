@@ -87,6 +87,11 @@
         <filter-class>com.main.server.filter.AuthenticationFilter</filter-class>
     </filter>
 
+    <filter>
+        <filter-name>Compression Filter</filter-name>
+        <filter-class>com.main.server.filter.CompressionFilter</filter-class>
+    </filter>
+
     <!--filter mappings-->
 
     <filter-mapping>
@@ -108,6 +113,23 @@
         <filter-name>Authentication Filter</filter-name>
         <url-pattern>/search</url-pattern>
     </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Compression Filter</filter-name>
+        <url-pattern>/view</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Compression Filter</filter-name>
+        <url-pattern>/search</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Compression Filter</filter-name>
+        <url-pattern>/update</url-pattern>
+    </filter-mapping>
+
+    <!--end of filters-->
 
     <welcome-file-list>
         <welcome-file>/pages/index.html</welcome-file>

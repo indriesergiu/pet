@@ -10,6 +10,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Calls the XML Services REST API.
@@ -20,8 +22,13 @@ public class HttpClient {
 
     //    private static final String SERVER_URL = "http://localhost:8080/xml_services/";
     private static final String SERVER_URL = "http://localhost:8080/";
+    private static final String GZIP_ENCODING = "gzip";
+
+    //    HTTP headers
     private static final String HTTP_HEADER_SET_COOKIE = "Set-Cookie";
     private static final String HTTP_HEADER_CACHE_CONTROL = "Cache-Control";
+    private static final String HTTP_HEADER_ACCEPT_ENCODING = "Accept-Encoding";
+    private static final String HTTP_HEADER_CONTENT_TYPE = "Content-Type";
 
     private Context context;
     private Logger logger = Logger.getLogger(HttpClient.class);
@@ -87,6 +94,8 @@ public class HttpClient {
                 logger.debug("Adding cookies:{" + cookies + "} to request.");
             }
 
+            connection.setRequestProperty(HTTP_HEADER_ACCEPT_ENCODING, GZIP_ENCODING);
+
             // check request status
             int responseCode = connection.getResponseCode();
 
@@ -95,7 +104,7 @@ public class HttpClient {
                 return "";
             }
 
-            String result = getResponseContent(connection);
+            String result = getCompressedResponseContent(connection);
 
             // if cache header is present store the resource
             String cacheControlHeader = connection.getHeaderField(HTTP_HEADER_CACHE_CONTROL);
@@ -133,12 +142,7 @@ public class HttpClient {
             }
 
             // send search criteria
-            connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-            OutputStream outputStream = connection.getOutputStream();
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-            outputStreamWriter.write(searchCriteriaInJson);
-            outputStreamWriter.flush();
+            Closeable outputStreamWriter = sendCompressedRequestBody(connection, searchCriteriaInJson);
 
             // check request status
             int responseCode = connection.getResponseCode();
@@ -149,7 +153,7 @@ public class HttpClient {
                 return "";
             }
 
-            String result = getResponseContent(connection);
+            String result = getCompressedResponseContent(connection);
             outputStreamWriter.close();
 
             // if cache header is present store the resource
@@ -182,13 +186,7 @@ public class HttpClient {
             String newPageContent = getContent(fileOrContent);
 
             // send search criteria
-            connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-            OutputStream outputStream = connection.getOutputStream();
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-            outputStreamWriter.write(newPageContent);
-            outputStreamWriter.flush();
-
+            Closeable outputStreamWriter = sendCompressedRequestBody(connection, newPageContent);
 
             // check request status
             int responseCode = connection.getResponseCode();
@@ -207,6 +205,30 @@ public class HttpClient {
         }
     }
 
+    private Closeable sendPlainRequestBody(HttpURLConnection connection, String requestBody) throws IOException {
+        connection.setDoOutput(true);
+        connection.setRequestMethod("POST");
+        OutputStream outputStream = connection.getOutputStream();
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
+        outputStreamWriter.write(requestBody);
+        outputStreamWriter.flush();
+        return outputStreamWriter;
+    }
+
+    private Closeable sendCompressedRequestBody(HttpURLConnection connection, String requestBody) throws IOException {
+        connection.setDoOutput(true);
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty(HTTP_HEADER_ACCEPT_ENCODING, "gzip");
+        connection.setRequestProperty(HTTP_HEADER_CONTENT_TYPE, "application/gzip");
+        OutputStream outputStream = connection.getOutputStream();
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(gzipOutputStream);
+        outputStreamWriter.write(requestBody);
+        outputStreamWriter.flush();
+        outputStreamWriter.close();
+        return gzipOutputStream;
+    }
+
     private String getContent(String fileOrContent) throws IOException {
         File file = new File(fileOrContent);
         if (file.exists() && file.isFile()) {
@@ -216,9 +238,21 @@ public class HttpClient {
         }
     }
 
-
-    private String getResponseContent(HttpURLConnection connection) throws IOException {
+    private String getPlainResponseContent(HttpURLConnection connection) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        StringBuilder result = new StringBuilder();
+        String temp;
+
+        while ((temp = in.readLine()) != null) {
+            result.append(temp + "\n");
+        }
+        in.close();
+        return result.toString();
+    }
+
+    private String getCompressedResponseContent(HttpURLConnection connection) throws IOException {
+        // TODO sergiu.indrie - check type of compression
+        BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(connection.getInputStream())));
         StringBuilder result = new StringBuilder();
         String temp;
 

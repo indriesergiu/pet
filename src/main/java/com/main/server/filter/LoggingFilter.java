@@ -34,10 +34,13 @@ public class LoggingFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         if (servletRequest instanceof HttpServletRequest) {
             HttpServletRequest request = (HttpServletRequest) servletRequest;
-            String requestBody = IOUtils.toString(request.getInputStream(), Config.ENCODING);
+//            String requestBody = IOUtils.toString(request.getInputStream(), Config.ENCODING);
+            // TODO sergiu.indrie - disabled for now, it breaks gzip input 
+            String requestBody = "";
             log.info(getRequestLogMessage(request, requestBody));
 
-            filterChain.doFilter(new RequestWrapper(request, requestBody), servletResponse);
+//            filterChain.doFilter(new RequestWrapper(request, requestBody), servletResponse);
+            filterChain.doFilter(request, servletResponse);
         } else {
             log.warn("A non-HTTP request has been received");
         }

@@ -56,7 +56,7 @@ public class ViewServlet extends HttpServlet {
         }
 
         // set cache header
-        HttpUtils.addMaxAgeCache(resp, ServerConstants.RESOURCE_MAX_AGE);
+        HttpUtils.addMaxAgeCache(resp, HttpUtils.RESOURCE_MAX_AGE);
 
         // set page content in response body
         resp.getOutputStream().print(pageContent);
