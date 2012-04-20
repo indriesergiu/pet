@@ -10,7 +10,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Searches an XML file for given items in a search criteria and returns the Xth page containing the search criteria.
@@ -23,11 +25,14 @@ public class SearchCommand implements Command {
     private int currentLine = 0;
 
     private List<String> currentPageLines;
+    private StringBuilder currentLineContent;
 
     /**
-     * indicates that the searched element was found in the current node
+     * indicates that the searched elements were found in the current page
      */
     private boolean found = false;
+
+    private boolean executionDone = false;
 
     /**
      * app config
@@ -44,6 +49,8 @@ public class SearchCommand implements Command {
         this.commandParser = commandParser;
         this.searchCriteria = searchCriteria;
         this.requestedPage = requestedPage;
+        currentLineContent = new StringBuilder();
+        currentPageLines = new LinkedList<String>();
     }
 
     @Override
@@ -51,29 +58,85 @@ public class SearchCommand implements Command {
 
         XmlElement element = commandParser.getNextElement();
 
-        // TODO sergiu.indrie - user XmlElement.toXml() to write each element (also DATA elements containing '\n' signal newlines)
+        while (element != null && !executionDone) {
 
-        while (element != null) {
+            // add element to current line
+            currentLineContent.append(element.toXml());
+
             switch (element.getType()) {
-                case START_DOCUMENT:
-//                    handleStartDocument(element);
-                    break;
                 case START_ELEMENT:
-//                    handleStartElement(element);
+                    handleStartElement(element);
                     break;
                 case DATA:
-//                    handleData(element);
-                    break;
-                case END_ELEMENT:
-//                    handleEndElement(element);
-                    break;
-                case END_DOCUMENT:
-//                    handleEndDocument();
+                    handleData(element);
                     break;
             }
 
             element = commandParser.getNextElement();
         }
+    }
+
+    private void handleStartElement(XmlElement element) {
+        Map<String, String> attributes = element.getAttributes();
+        if (attributes.size() > 0) {
+            for (String attributeName : attributes.keySet()) {
+                if (searchCriteria.matchAttribute(attributes.get(attributeName))) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    private void handleData(XmlElement element) {
+        // perform search
+        String data = element.getData();
+        if (searchCriteria.matchData(data)) {
+            found = true;
+        }
+
+        // handle new line
+        if (data.contains("\n")) {
+
+            // complete current line
+            currentLine++;
+            currentPageLines.add(currentLineContent.toString());
+            currentLineContent = new StringBuilder();
+
+            // reached the end of current page
+            if (currentLine >= config.getXmlPageSize()) {
+
+                // check if this is the requested page
+                if (currentPage == requestedPage && found) {
+                    requestedPageContent = buildRequestedPageContent();
+                    executionDone = true;
+                    return;
+                }
+
+                // clear the counters and the previous page's lines
+                currentLine = 0;
+                currentPageLines.clear();
+
+                // add the spaces from the previous page's data element (typically "\n   ") to preserve the element indentation
+                if (data.matches("\n +")) {
+                    currentLineContent.append(data.substring(1));
+                }
+
+                // increment the search page number
+                if (found) {
+                    currentPage++;
+                    found = false;
+                }
+            }
+        }
+    }
+
+    private String buildRequestedPageContent() {
+        StringBuilder builder = new StringBuilder();
+        for (String line : currentPageLines) {
+            builder.append(line);
+        }
+        return builder.toString();
     }
 
     public String getRequestedPageContent() {
@@ -87,8 +150,10 @@ public class SearchCommand implements Command {
         Reader reader = new InputStreamReader(inputStream, Config.ENCODING);
 
         CommandParser commandParser = new StAXGenericParser(reader);
-        Command cmd = new SearchCommand(commandParser, SearchCriteria.createSearchCriteriaFromValue(filter), 1);
+        SearchCommand cmd = new SearchCommand(commandParser, SearchCriteria.createSearchCriteriaFromValue(filter), 3);
         cmd.execute();
+
+        System.out.println(cmd.getRequestedPageContent());
 
         inputStream.close();
     }
