@@ -1,6 +1,7 @@
 package com.main.server.filter;
 
 import com.main.server.LoginServlet;
+import com.main.server.ServerConstants;
 import org.apache.log4j.Logger;
 
 import javax.servlet.*;
@@ -8,6 +9,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Checks all incoming requests for authentication, if not authenticated sends a redirect to the login page.
@@ -22,6 +25,8 @@ public class AuthenticationFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         this.filterConfig = filterConfig;
+        // init session cookies map used for authentication
+        filterConfig.getServletContext().setAttribute(ServerConstants.SESSION_COOKIES, new HashMap<String, Cookie>());
     }
 
     @Override
@@ -40,11 +45,11 @@ public class AuthenticationFilter implements Filter {
                 }
             }
 
-            if (isValid(sessionCookie)) {
-                log.info("Request has session id cookie.");
+            if (isValid(servletRequest.getServletContext(), sessionCookie)) {
+                log.info("Request has a valid session id cookie.");
                 filterChain.doFilter(request, servletResponse);
             } else {
-                log.info("Request does not have the session id cookie. Redirecting to unauthentication page.");
+                log.info("Request does not a valid session id cookie. Redirecting to unauthentication page.");
                 HttpServletResponse response = (HttpServletResponse) servletResponse;
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "You must be authenticated to perform this operation.");
             }
@@ -54,12 +59,13 @@ public class AuthenticationFilter implements Filter {
         }
     }
 
-    private boolean isValid(Cookie sessionCookie) {
-        if (sessionCookie != null) {
-            return true;
+    private boolean isValid(ServletContext servletContext, Cookie sessionCookie) {
+        if (sessionCookie == null) {
+            return false;
         }
-        // TODO sergiu.indrie - in future check cookie authenticity
-        return false;
+
+        Map<String, Cookie> sessionCookies = (Map<String, Cookie>) servletContext.getAttribute(ServerConstants.SESSION_COOKIES);
+        return sessionCookies.containsKey(sessionCookie.getValue());
     }
 
     @Override

@@ -16,12 +16,12 @@ import java.io.*;
  * Service used by the servlets
  *
  * @author Sergiu Indrie
- *         <p/>
- *         todo extract interface
  */
 public class XmlService {
 
     private static final Logger log = Logger.getLogger(XmlService.class);
+
+    // TODO sergiu.indrie - protect shared resource
 
     public static String getPage(int pageNumber, InputStream inputStream) throws XmlServiceException {
         try {

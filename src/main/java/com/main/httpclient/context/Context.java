@@ -59,6 +59,8 @@ public class Context {
             if (System.currentTimeMillis() < cacheEntry.getExpirationDateInMillis()) {
                 logger.info("Returning cached resource for " + fullUrl);
                 return cacheEntry.getContent();
+            } else {
+                logger.info("Cache expired for " + fullUrl);
             }
         }
         return null;

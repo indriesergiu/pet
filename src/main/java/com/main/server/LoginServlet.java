@@ -69,7 +69,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     private Map<String, String> getUsersMap() {
-        // TODO sergiu.indrie - could be loaded from a file or other structure
+        // TODO sergiu.indrie - could be loaded from a file, DB or other structure
         Map<String, String> map = new HashMap<String, String>();
         map.put("Guest", "GuestPass");
         map.put("Test", "TestPass");
@@ -77,10 +77,11 @@ public class LoginServlet extends HttpServlet {
     }
 
     private void addSessionCookie(ServletContext context, HttpServletResponse resp) {
-        // TODO sergiu.indrie - cookie could be stored in the servlet context and verified in the auth filter
         String value = String.valueOf((long) (Math.random() * MILLION));
-        Cookie sessionCookie = new Cookie(SESSION_ID_COOKIE, value);
+        Cookie cookie = new Cookie(SESSION_ID_COOKIE, value);
         log.debug("Adding session cookie with value=" + value);
-        resp.addCookie(sessionCookie);
+        Map<String, Cookie> sessionCookies = (Map<String, Cookie>) context.getAttribute(ServerConstants.SESSION_COOKIES);
+        sessionCookies.put(value, cookie);
+        resp.addCookie(cookie);
     }
 }
