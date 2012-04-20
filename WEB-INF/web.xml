@@ -16,6 +16,18 @@
         <servlet-class>com.main.server.ViewServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>UpdateServlet</servlet-name>
+        <description>Handles the 'update' call</description>
+        <servlet-class>com.main.server.UpdateServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <description>Handles the 'login' call</description>
+        <servlet-class>com.main.server.LoginServlet</servlet-class>
+    </servlet>
+
     <!--servlet mappings (I'm hoping order matters)-->
 
     <servlet-mapping>
@@ -23,16 +35,25 @@
         <url-pattern>/view</url-pattern>
     </servlet-mapping>
 
-    
+    <servlet-mapping>
+        <servlet-name>UpdateServlet</servlet-name>
+        <url-pattern>/update</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+
     <!--
     login
-    http://localhost:9091/xml-filter/login      ?user="John"&pass="secret"
+    http://localhost:9091/xml-filter/login      ?user="John"&pass="secret"      GET
                    authToken <-
 
     (&authToken="1kjh123jh") will be required on all following methods
 
     view
-    http://localhost:9091/xml-filter/view       ?page=2
+    http://localhost:9091/xml-filter/view       ?page=2         GET
                     page 2 <-
     search
     http://localhost:9091/xml-filter/search     - POST with JSON search criteria       (optional page)
@@ -52,9 +73,31 @@
         <filter-class>com.main.server.filter.LoggingFilter</filter-class>
     </filter>
 
+    <filter>
+        <filter-name>Authentication Filter</filter-name>
+        <filter-class>com.main.server.filter.AuthenticationFilter</filter-class>
+    </filter>
+
+    <!--filter mappings-->
+
     <filter-mapping>
         <filter-name>Logging Filter</filter-name>
         <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Authentication Filter</filter-name>
+        <url-pattern>/view</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Authentication Filter</filter-name>
+        <url-pattern>/update</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Authentication Filter</filter-name>
+        <url-pattern>/search</url-pattern>
     </filter-mapping>
 
     <welcome-file-list>
@@ -63,8 +106,14 @@
 
     <context-param>
         <param-name>DMOZ_DATA_FILE</param-name>
-        <param-value>\data\rss.rdf.u8</param-value>
+        <param-value>D:\down\temp\content.example.txt</param-value>
         <description>The DMOZ data file used for XML operations (decompressed)</description>
     </context-param>
+
+    <!--could not get to work-->
+    <error-page>
+        <error-code>401</error-code>
+        <location>/pages/not_authenticated.html</location>
+    </error-page>
 
 </web-app>
