@@ -33,6 +33,13 @@
     <property name="build.classes.dir" value="${build.dir}/classes"/>
     <property name="build.jar.dir" value="${build.dir}/jar"/>
 
+
+
+    <!--Server properties-->
+    <property name="tomcat.home" value="d:/programe/apache-tomcat-7.0.22"/>
+    <property name="deploy.dir" value="${tomcat.home}/webapps"/>
+    <property name="server.name" value="xml_services"/>
+
     <property name="main-class" value="com.main.xmlfilter.XmlFilterMain"/>
 
     <path id="application" location="${build.jar.dir}/${ant.project.name}.jar"/>
@@ -57,6 +64,24 @@
                 <attribute name="Main-Class" value="${main-class}"/>
             </manifest>
         </jar>
+    </target>
+
+    <target name="war" depends="compile">
+        <war destfile="${build.dir}/${server.name}.war" webxml="WEB-INF/web.xml">
+            <zipfileset dir="pages" prefix="pages"/>
+            <lib dir="lib">
+                <!-- remove Servlet classes since they break Tomcat startup -->
+                <exclude name="javax.*"/>
+            </lib>
+            <classes dir="${build.classes.dir}"/>
+        </war>
+    </target>
+
+    <property environment="env"/>
+
+    <target name="deploy" depends="war">
+        <copy file="${build.dir}/${server.name}.war" toDir="${deploy.dir}"/>
+        <exec executable="${tomcat.home}\bin\startup.bat" />
     </target>
 
     <target name="run" depends="jar">
