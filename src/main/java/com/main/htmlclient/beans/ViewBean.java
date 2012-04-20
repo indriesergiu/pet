@@ -37,6 +37,9 @@ public class ViewBean extends AbstractBean {
     }
 
     public String getUrlEncodedPageContent() throws UnsupportedEncodingException {
+        if (responseData.getBody() == null){
+            return "";
+        }
         return URLEncoder.encode(StringEscapeUtils.escapeHtml4(responseData.getBody()), "UTF-8");
     }
 

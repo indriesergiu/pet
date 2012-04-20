@@ -2,6 +2,8 @@ package com.main.htmlclient.beans;
 
 import com.main.httpclient.HttpClientException;
 
+import javax.servlet.http.Cookie;
+
 /**
  * Created by IntelliJ IDEA.
  *
@@ -15,8 +17,7 @@ public class UpdateBean extends AbstractBean {
 
     public void update() throws HttpClientException {
         validate();
-        // TODO sergiu.indrie - uncomment me
-        //        responseData = client.update(page, pageContent, cookieMap.values().toArray(new Cookie[0]));
+        responseData = client.update(page, pageContent, cookieMap.values().toArray(new Cookie[0]));
     }
 
     private void validate() {

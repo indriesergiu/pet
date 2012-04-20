@@ -7,7 +7,7 @@
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%--<%@ page errorPage="error.jsp" %>--%>
+<%@ page errorPage="error.jsp" %>
 <jsp:useBean id="updateBean" class="com.main.htmlclient.beans.UpdateBean" scope="session"/>
 <jsp:setProperty name="updateBean" property="*"/>
 <jsp:setProperty name="updateBean" property="cookieMap" value="${cookie}"/>

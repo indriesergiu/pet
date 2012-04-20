@@ -6,7 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%--<%@ page errorPage="error.jsp" %>--%>
+<%@ page errorPage="error.jsp" %>
 <jsp:useBean id="updateBean" class="com.main.htmlclient.beans.UpdateBean" scope="session"/>
 <jsp:setProperty name="updateBean" property="*"/>
 <jsp:setProperty name="updateBean" property="cookieMap" value="${cookie}"/>

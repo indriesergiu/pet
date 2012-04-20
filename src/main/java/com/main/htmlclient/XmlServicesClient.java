@@ -162,6 +162,48 @@ public class XmlServicesClient {
         }
     }
 
+    public ResponseData update(String page, String pageContent, Cookie[] cookies) throws HttpClientException {
+        try {
+            String charset = ClientConstants.DEFAULT_ENCODING;
+            String query = String.format("page=%s", URLEncoder.encode(page, charset));
+            URL url = new URL(SERVER_URL + "update?" + query);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            // set cookies
+            String cookiesAsString = getCookiesAsString(cookies);
+            if (cookies != null && !(cookies.length < 0)) {
+                connection.setRequestProperty("Cookie", cookiesAsString);
+                logger.debug("Adding cookies:{" + cookiesAsString + "} to request.");
+            }
+
+            // send search criteria
+            Closeable outputStreamWriter = sendCompressedRequestBody(connection, pageContent);
+
+            // check request status
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                logger.info("Request was not successfully answered. Status code " + responseCode + " and message: " + connection.getResponseMessage());
+                outputStreamWriter.close();
+                return new ResponseData(connection.getResponseMessage(), responseCode);
+            }
+
+            outputStreamWriter.close();
+            ResponseData responseData = new ResponseData("", responseCode, connection.getResponseMessage());
+
+            // if cache header is present store the resource
+            String cacheControlHeader = connection.getHeaderField(HTTP_HEADER_CACHE_CONTROL);
+            if (cacheControlHeader != null) {
+                responseData.getHeader().put(HTTP_HEADER_CACHE_CONTROL, cacheControlHeader);
+            }
+
+            return responseData;
+
+        } catch (Exception e) {
+            throw new HttpClientException("An error has occurred during authentication.", e);
+        }
+    }
+
 
     private String getCookiesAsString(Cookie[] cookies) {
         StringBuilder result = new StringBuilder();

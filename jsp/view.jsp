@@ -6,7 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%--<%@ page errorPage="error.jsp" %>--%>
+<%@ page errorPage="error.jsp" %>
 <jsp:useBean id="viewBean" class="com.main.htmlclient.beans.ViewBean" scope="session"/>
 <jsp:setProperty name="viewBean" property="*"/>
 <jsp:setProperty name="viewBean" property="cookieMap" value="${cookie}"/>
@@ -61,6 +61,8 @@
         </td>
     </tr>
 </table>
+
+<%--TODO add headers from response data--%>
 
 </body>
 </html>
