@@ -10,6 +10,9 @@ public class SearchItem {
     private SearchItemType searchItemType;
     private String value;
 
+    public SearchItem() {
+    }
+
     public SearchItem(SearchItemType searchItemType, String value) {
         this.searchItemType = searchItemType;
         this.value = value;

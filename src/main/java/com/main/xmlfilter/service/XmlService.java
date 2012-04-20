@@ -1,8 +1,11 @@
 package com.main.xmlfilter.service;
 
 import com.main.xmlfilter.commands.GetPageCommand;
+import com.main.xmlfilter.commands.SearchCommand;
 import com.main.xmlfilter.commands.UpdatePageCommand;
 import com.main.xmlfilter.commands.ValidateWellFormedCommand;
+import com.main.xmlfilter.commands.xml.CommandParser;
+import com.main.xmlfilter.commands.xml.StAXGenericParser;
 import com.main.xmlfilter.config.Config;
 import com.main.xmlfilter.search.SearchCriteria;
 import org.apache.log4j.Logger;
@@ -65,10 +68,19 @@ public class XmlService {
         return cmd.isWellFormed();
     }
 
-    public static String search(SearchCriteria searchCriteria, int pageNumber) {
-        // TODO sergiu.indrie - implement search command
-        return null;
+    public static String search(SearchCriteria searchCriteria, int pageNumber, InputStream inputStream) throws XmlServiceException {
+        SearchCommand cmd;
+        try {
+            Reader reader = new InputStreamReader(inputStream, Config.ENCODING);
+            CommandParser commandParser = new StAXGenericParser(reader);
+            cmd = new SearchCommand(commandParser, searchCriteria, pageNumber);
+            cmd.execute();
+            inputStream.close();
+        } catch (Exception e) {
+            log.error("An error has occurred while calling search with searchCriteria=" + searchCriteria + " and pageNumber=" + pageNumber, e);
+            throw new XmlServiceException("The well-formed check could not be successfully performed.");
+        }
+
+        return cmd.getRequestedPageContent();
     }
-
-
 }

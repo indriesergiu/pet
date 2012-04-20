@@ -2,6 +2,8 @@ package com.main.server;
 
 import com.main.xmlfilter.search.SearchCriteria;
 import com.main.xmlfilter.service.ServletLevelException;
+import com.main.xmlfilter.service.XmlService;
+import com.main.xmlfilter.service.XmlServiceException;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -41,7 +43,17 @@ public class SearchServlet extends HttpServlet {
             return;
         }
 
-        // TODO sergiu.indrie - call search method on service layer
+        String searchedPageContent;
+        try {
+            log.info("Searching page " + page + " with search criteria:\n" + searchCriteria);
+            searchedPageContent = XmlService.search(searchCriteria, page, inputStream);
+        } catch (XmlServiceException e) {
+            log.error("An error occurred while processing the search command.", e);
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
+
+        resp.getOutputStream().print(searchedPageContent);
     }
 
     private SearchCriteria getSearchCriteria(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletLevelException {

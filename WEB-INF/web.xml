@@ -119,6 +119,12 @@
         <description>The DMOZ data file used for XML operations (decompressed)</description>
     </context-param>
 
+    <context-param>
+        <param-name>LOGGING_CONFIG_FILE</param-name>
+        <param-value>D:\down\temp\logging.conf</param-value>
+        <description>The logging framework configuration file.</description>
+    </context-param>
+
     <!--only works with sendError(int, String); setStatus(int) does not!!-->
     <error-page>
         <error-code>401</error-code>

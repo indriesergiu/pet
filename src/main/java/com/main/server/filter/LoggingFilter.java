@@ -1,9 +1,10 @@
 package com.main.server.filter;
 
+import com.main.server.ServerConstants;
 import com.main.xmlfilter.config.Config;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import javax.servlet.*;
 import javax.servlet.http.Cookie;
@@ -25,7 +26,8 @@ public class LoggingFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         this.filterConfig = filterConfig;
-        BasicConfigurator.configure();
+        // configure the logging framework from file
+        PropertyConfigurator.configure((String) filterConfig.getServletContext().getInitParameter(ServerConstants.LOGGING_CONFIG_FILE));
     }
 
     @Override

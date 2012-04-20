@@ -1,5 +1,8 @@
 package com.main.xmlfilter.search;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
+import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -23,6 +26,9 @@ public class SearchCriteria {
     }
 
     public boolean matchAttribute(String attribute) {
+        if (attribute == null) {
+            return false;
+        }
         for (SearchItem searchItem : searchItems) {
             switch (searchItem.getSearchItemType()) {
                 case ATTRIBUTE:
@@ -36,6 +42,9 @@ public class SearchCriteria {
     }
 
     public boolean matchData(String data) {
+        if (data == null) {
+            return false;
+        }
         for (SearchItem searchItem : searchItems) {
             switch (searchItem.getSearchItemType()) {
                 case DATA:
@@ -64,5 +73,11 @@ public class SearchCriteria {
     @Override
     public String toString() {
         return "SearchCriteria{" + "searchItems=" + searchItems + '}';
+    }
+
+    public static void main(String[] args) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        String searchCriteriaInJson = mapper.writeValueAsString(createSearchCriteriaFromValue("apple"));
+        System.out.println(searchCriteriaInJson);
     }
 }
