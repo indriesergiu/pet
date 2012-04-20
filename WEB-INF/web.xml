@@ -8,16 +8,22 @@
         Offers XML filter services through REST web services
     </description>
 
+    <!--servlets-->
+
     <servlet>
-        <servlet-name>SimpleServlet</servlet-name>
-        <description>Again, some description</description>
-        <servlet-class>com.main.server.SimpleServlet</servlet-class>
-        <init-param>
-            <param-name>foo</param-name>
-            <param-value>bar</param-value>
-        </init-param>
+        <servlet-name>ViewServlet</servlet-name>
+        <description>Handles the 'view' call</description>
+        <servlet-class>com.main.server.ViewServlet</servlet-class>
     </servlet>
 
+    <!--servlet mappings (I'm hoping order matters)-->
+
+    <servlet-mapping>
+        <servlet-name>ViewServlet</servlet-name>
+        <url-pattern>/view</url-pattern>
+    </servlet-mapping>
+
+    
     <!--
     login
     http://localhost:9091/xml-filter/login      ?user="John"&pass="secret"
@@ -35,15 +41,30 @@
     update
     http://localhost:9091/xml-filter/update     ?page       -POST with JSON string page content
 
+    todo use a welcome-file
     
     -->
-    <servlet-mapping>
-        <servlet-name>SimpleServlet</servlet-name>
-        <url-pattern>/*</url-pattern>
-    </servlet-mapping>
 
-    <session-config>
-        <session-timeout>30</session-timeout>
-    </session-config>
+    <!--filters-->
+
+    <filter>
+        <filter-name>Logging Filter</filter-name>
+        <filter-class>com.main.server.filter.LoggingFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Logging Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <welcome-file-list>
+        <welcome-file>/pages/index.html</welcome-file>
+    </welcome-file-list>
+
+    <context-param>
+        <param-name>DMOZ_DATA_FILE</param-name>
+        <param-value>\data\rss.rdf.u8</param-value>
+        <description>The DMOZ data file used for XML operations (decompressed)</description>
+    </context-param>
 
 </web-app>

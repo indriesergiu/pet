@@ -32,9 +32,9 @@ public class GetPageCommand implements Command {
 
     @Override
     public void execute() throws Exception {
-        String line;
-        do {
-            line = reader.readLine();
+        String line = reader.readLine();
+
+        while (line != null) {
             if (currentPage == requestedPage) {
                 buffer.append(line + "\n");
             }
@@ -45,7 +45,6 @@ public class GetPageCommand implements Command {
 
                 // page has been found, quit reading
                 if (currentPage == requestedPage) {
-                    reader.close();
                     break;
                 }
 
@@ -53,7 +52,10 @@ public class GetPageCommand implements Command {
                 currentPage++;
             }
 
-        } while (line != null);
+            line = reader.readLine();
+        }
+
+        reader.close();
     }
 
     public String getRequestedPageContent() {
@@ -65,7 +67,7 @@ public class GetPageCommand implements Command {
         InputStream inputStream = new FileInputStream(filename);
         Reader reader = new InputStreamReader(inputStream, Config.ENCODING);
 
-        GetPageCommand cmd = new GetPageCommand(0, reader);
+        GetPageCommand cmd = new GetPageCommand(1, reader);
         cmd.execute();
 
         System.out.println(cmd.getRequestedPageContent());
