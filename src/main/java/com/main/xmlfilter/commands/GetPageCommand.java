@@ -5,7 +5,7 @@ import com.main.xmlfilter.config.Config;
 import java.io.*;
 
 /**
- * Obtain page number X from the XML file.
+ * Obtain page number X from a file.
  *
  * @author Sergiu Indrie
  */

@@ -24,9 +24,7 @@ public class UpdateServlet extends HttpServlet {
 
     private static final String SERVLET_TEMP_DIR = "javax.servlet.context.tempdir";
     private static final String UPDATED_FILENAME = "updated.xml";
-    private Logger log = Logger.getLogger(getClass());
-
-    private static final String PAGE = "page";
+    private static final Logger log = Logger.getLogger(UpdateServlet.class);
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, java.io.IOException {
@@ -38,7 +36,7 @@ public class UpdateServlet extends HttpServlet {
         int page;
         String pageContent;
         try {
-            page = getPage(req, resp);
+            page = ParameterExtractor.getPage(req, resp);
             pageContent = getPageContent(req, resp);
         } catch (ServletLevelException e) {
             // all error handling is done, simply return
@@ -96,25 +94,6 @@ public class UpdateServlet extends HttpServlet {
             throw new ServletLevelException();
         }
         return pageContent;
-    }
-
-    private int getPage(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletLevelException {
-        int page;
-        try {
-            page = Integer.parseInt(req.getParameter(PAGE));
-        } catch (NumberFormatException e) {
-            log.error("Invalid parameter page=" + req.getParameter(PAGE), e);
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter '" + PAGE + "' must be a positive integer.");
-            throw new ServletLevelException();
-        }
-
-        if (page < 0) {
-            log.error("Invalid parameter page=" + req.getParameter(PAGE));
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter '" + PAGE + "' must be a positive integer.");
-            throw new ServletLevelException();
-        }
-
-        return page;
     }
 
     private File getUpdateFile(HttpServletRequest req) {

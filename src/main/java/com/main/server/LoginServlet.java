@@ -24,7 +24,7 @@ public class LoginServlet extends HttpServlet {
     public static final String PASSWORD = "pass";
     private static final int MILLION = 1000000;
 
-    private Logger log = Logger.getLogger(getClass());
+    private static final Logger log = Logger.getLogger(LoginServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, java.io.IOException {

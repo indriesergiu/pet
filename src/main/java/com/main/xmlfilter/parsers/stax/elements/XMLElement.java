@@ -1,5 +1,7 @@
 package com.main.xmlfilter.parsers.stax.elements;
 
+import com.main.xmlfilter.commands.xml.XmlUtils;
+
 import java.util.Map;
 
 /**
@@ -47,7 +49,7 @@ public class XmlElement {
         return new XmlElement(ElementType.DATA, null, null, data, null);
     }
 
-     public static XmlElement createCommentElement(String commentText) {
+    public static XmlElement createCommentElement(String commentText) {
         return new XmlElement(ElementType.COMMENT, null, null, commentText, null);
     }
 
@@ -109,6 +111,59 @@ public class XmlElement {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String toXml() {
+        StringBuilder result = new StringBuilder();
+        switch (type) {
+            case START_DOCUMENT:
+                toXmlStartDocument(result);
+                break;
+            case START_ELEMENT:
+                toXmlStartElement(result);
+                break;
+            case COMMENT:
+                toXmlComment(result);
+                break;
+            case DATA:
+                toXmlData(result);
+                break;
+            case END_ELEMENT:
+                toXmlEndElement(result);
+                break;
+        }
+
+        return result.toString();
+    }
+
+    private void toXmlStartDocument(StringBuilder result) {
+        if (encoding != null || version != null) {
+            result.append("<?xml");
+            result.append(version != null ? " version=\"" + version + "\"" : "");
+            result.append(encoding != null ? " encoding=\"" + encoding + "\"" : "");
+            result.append("?>");
+        }
+    }
+
+    private void toXmlEndElement(StringBuilder result) {
+        result.append("</" + XmlUtils.getFullName(prefix, localName) + ">");
+    }
+
+    private void toXmlData(StringBuilder result) {
+        result.append(data);
+    }
+
+    private void toXmlComment(StringBuilder result) {
+        result.append("<!--" + data + "-->");
+    }
+
+    private void toXmlStartElement(StringBuilder result) {
+        result.append("<" + XmlUtils.getFullName(prefix, localName));
+        if (attributes != null) {
+            for (Map.Entry<String, String> entry : attributes.entrySet()) {
+                result.append(" " + entry.getKey() + "=\"" + entry.getValue() + "\"");
+            }
+        }
     }
 
     @Override

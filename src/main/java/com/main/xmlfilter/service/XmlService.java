@@ -4,6 +4,7 @@ import com.main.xmlfilter.commands.GetPageCommand;
 import com.main.xmlfilter.commands.UpdatePageCommand;
 import com.main.xmlfilter.commands.ValidateWellFormedCommand;
 import com.main.xmlfilter.config.Config;
+import com.main.xmlfilter.search.SearchCriteria;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -17,7 +18,7 @@ import java.io.*;
  */
 public class XmlService {
 
-    private static Logger log = Logger.getLogger(XmlService.class);
+    private static final Logger log = Logger.getLogger(XmlService.class);
 
     public static String getPage(int pageNumber, InputStream inputStream) throws XmlServiceException {
         try {
@@ -62,6 +63,11 @@ public class XmlService {
             throw new XmlServiceException("The well-formed check could not be successfully performed.");
         }
         return cmd.isWellFormed();
+    }
+
+    public static String search(SearchCriteria searchCriteria, int pageNumber) {
+        // TODO sergiu.indrie - implement search command
+        return null;
     }
 
 

@@ -1,9 +1,6 @@
 package com.main.xmlfilter.commands;
 
-import com.main.xmlfilter.commands.xml.CommandParser;
-import com.main.xmlfilter.commands.xml.StAXGenericParser;
-import com.main.xmlfilter.commands.xml.StAXXmlWriter;
-import com.main.xmlfilter.commands.xml.XmlWriter;
+import com.main.xmlfilter.commands.xml.*;
 import com.main.xmlfilter.config.Config;
 import com.main.xmlfilter.parsers.stax.elements.XmlElement;
 import com.main.xmlfilter.search.SearchCriteria;
@@ -93,7 +90,7 @@ public class FilterAndInsertCommand implements Command {
     }
 
     private void handleEndElement(XmlElement element) {
-        String qName = getFullName(element.getPrefix(), element.getLocalName());
+        String qName = XmlUtils.getFullName(element.getPrefix(), element.getLocalName());
 
         elements.push(element);
         depth--;
@@ -164,21 +161,10 @@ public class FilterAndInsertCommand implements Command {
         do {
             elements.pop();
             XmlElement element = elements.peek();
-            nodeFound = qName.equals(getFullName(element.getPrefix(), element.getLocalName()));
+            nodeFound = qName.equals(XmlUtils.getFullName(element.getPrefix(), element.getLocalName()));
         } while (!nodeFound);
 
         elements.pop();
-    }
-
-    // todo consider adding to abstract class
-    private String getFullName(String prefix, String local) {
-        StringBuilder qName = new StringBuilder();
-        qName.append(prefix != null ? prefix : "");
-        if (prefix != null && !prefix.equals("") && local != null && !local.equals("")) {
-            qName.append(":");
-        }
-        qName.append(local != null ? local : "");
-        return qName.toString();
     }
 
     private void pushCustomNode() {

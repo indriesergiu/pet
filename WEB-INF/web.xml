@@ -28,6 +28,12 @@
         <servlet-class>com.main.server.LoginServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>SearchServlet</servlet-name>
+        <description>Handles the 'search' call</description>
+        <servlet-class>com.main.server.SearchServlet</servlet-class>
+    </servlet>
+
     <!--servlet mappings (I'm hoping order matters)-->
 
     <servlet-mapping>
@@ -43,6 +49,11 @@
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SearchServlet</servlet-name>
+        <url-pattern>/search</url-pattern>
     </servlet-mapping>
 
     <!--
@@ -62,8 +73,6 @@
     update
     http://localhost:9091/xml-filter/update     ?page       -POST with JSON string page content
 
-    todo use a welcome-file
-    
     -->
 
     <!--filters-->
@@ -110,7 +119,7 @@
         <description>The DMOZ data file used for XML operations (decompressed)</description>
     </context-param>
 
-    <!--could not get to work-->
+    <!--only works with sendError(int, String); setStatus(int) does not!!-->
     <error-page>
         <error-code>401</error-code>
         <location>/pages/not_authenticated.html</location>

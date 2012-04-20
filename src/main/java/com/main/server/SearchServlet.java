@@ -1,0 +1,56 @@
+package com.main.server;
+
+import com.main.xmlfilter.search.SearchCriteria;
+import com.main.xmlfilter.service.ServletLevelException;
+import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+/**
+ * Handles 'search' calls.
+ *
+ * @author Sergiu Indrie
+ */
+public class SearchServlet extends HttpServlet {
+
+    private static final Logger log = Logger.getLogger(SearchServlet.class);
+    private ObjectMapper jsonConverter = new ObjectMapper();
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, java.io.IOException {
+        ServletContext context = req.getServletContext();
+        String pathToDataFile = context.getInitParameter(ServerConstants.DMOZ_DATA_FILE);
+        InputStream inputStream = new FileInputStream(pathToDataFile);
+
+        // obtain request parameters
+        int page;
+        SearchCriteria searchCriteria;
+        try {
+            page = ParameterExtractor.getPage(req, resp);
+            searchCriteria = getSearchCriteria(req, resp);
+        } catch (ServletLevelException e) {
+            // all error handling is done, simply return
+            return;
+        }
+
+        // TODO sergiu.indrie - call search method on service layer
+    }
+
+    private SearchCriteria getSearchCriteria(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletLevelException {
+        SearchCriteria searchCriteria = jsonConverter.readValue(req.getInputStream(), SearchCriteria.class);
+        if (searchCriteria == null) {
+            log.error("Invalid search criteria found in request.");
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "The search call must have a valid search criteria in JSON format in the request body.");
+            throw new ServletLevelException();
+        }
+        return searchCriteria;
+    }
+}

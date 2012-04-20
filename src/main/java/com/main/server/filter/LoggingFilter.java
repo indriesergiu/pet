@@ -19,7 +19,7 @@ import java.util.Enumeration;
  */
 public class LoggingFilter implements Filter {
 
-    private Logger log = Logger.getLogger(getClass());
+    private static final Logger log = Logger.getLogger(LoggingFilter.class);
     private FilterConfig filterConfig;
 
     @Override
