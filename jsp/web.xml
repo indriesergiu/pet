@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app>
+
+    <display-name>
+        XML Services JSP Client
+    </display-name>
+    <description>
+        Offers XML filter services through a JSP Client
+    </description>
+
+</web-app>

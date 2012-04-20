@@ -37,6 +37,7 @@
     <property name="tomcat.home" value="d:/programe/apache-tomcat-7.0.22"/>
     <property name="deploy.dir" value="${tomcat.home}/webapps"/>
     <property name="server.name" value="xml_services"/>
+    <property name="jsp.server.name" value="jsp_xml_services"/>
 
     <!--http client console-->
     <property name="src.clientconsole.dir" value="${src.dir}/main/java/com/main/httpclient"/>
@@ -75,6 +76,19 @@
     <target name="war" depends="compile">
         <war destfile="${build.dir}/${server.name}.war" webxml="WEB-INF/web.xml">
             <zipfileset dir="pages" prefix="pages"/>
+            <lib dir="lib">
+                <!-- remove Servlet classes since they break Tomcat startup -->
+                <exclude name="javax.*"/>
+            </lib>
+            <classes dir="${build.classes.dir}"/>
+        </war>
+    </target>
+
+    <target name="jsp-war" depends="compile">
+        <war destfile="${build.dir}/${jsp.server.name}.war" webxml="jsp/web.xml">
+            <zipfileset dir="jsp">
+                <exclude name="web.xml"/>
+            </zipfileset>
             <lib dir="lib">
                 <!-- remove Servlet classes since they break Tomcat startup -->
                 <exclude name="javax.*"/>
