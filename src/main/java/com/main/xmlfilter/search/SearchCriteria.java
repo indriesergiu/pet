@@ -1,0 +1,68 @@
+package com.main.xmlfilter.search;
+
+import java.util.Collection;
+import java.util.LinkedList;
+
+/**
+ * Holds all search necessary information (lists of attribute-value pairs)
+ *
+ * @author sergiu.indrie
+ */
+public class SearchCriteria {
+
+    private Collection<SearchItem> searchItems;
+
+    public SearchCriteria() {
+        searchItems = new LinkedList<SearchItem>();
+    }
+
+    // todo postpone creation until servlet entry format is known
+
+    public Collection<SearchItem> getSearchItems() {
+        return searchItems;
+    }
+
+    public boolean matchAttribute(String attribute) {
+        for (SearchItem searchItem : searchItems) {
+            switch (searchItem.getSearchItemType()) {
+                case ATTRIBUTE:
+                    if (attribute.toLowerCase().contains(searchItem.getValue().toLowerCase())) {
+                        return true;
+                    }
+                    break;
+            }
+        }
+        return false;
+    }
+
+    public boolean matchData(String data) {
+        for (SearchItem searchItem : searchItems) {
+            switch (searchItem.getSearchItemType()) {
+                case DATA:
+                    if (data.toLowerCase().contains(searchItem.getValue().toLowerCase())) {
+                        return true;
+                    }
+                    break;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Creates a search criteria based on the given value. The criteria will search for data or attribute values that match the given value.
+     *
+     * @param value the value to create the search criteria from
+     * @return a search criteria based on the given value
+     */
+    public static SearchCriteria createSearchCriteriaFromValue(String value) {
+        SearchCriteria result = new SearchCriteria();
+        result.getSearchItems().add(new SearchItem(SearchItemType.ATTRIBUTE, value));
+        result.getSearchItems().add(new SearchItem(SearchItemType.DATA, value));
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "SearchCriteria{" + "searchItems=" + searchItems + '}';
+    }
+}

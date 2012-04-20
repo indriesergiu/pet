@@ -6,5 +6,5 @@ package com.main.xmlfilter.parsers.stax.elements;
  * @author sergiu.indrie
  */
 public enum ElementType {
-    START, DATA, END
+    START_DOCUMENT, START_ELEMENT, DATA, COMMENT, END_ELEMENT, END_DOCUMENT
 }

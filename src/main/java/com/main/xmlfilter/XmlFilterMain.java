@@ -4,6 +4,7 @@ import com.main.xmlfilter.config.Config;
 import com.main.xmlfilter.monitor.MemoryTracker;
 import com.main.xmlfilter.monitor.MemoryTrackerFactory;
 import com.main.xmlfilter.monitor.MemoryTrackerType;
+import com.main.xmlfilter.search.SearchCriteria;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -83,15 +84,17 @@ public class XmlFilterMain {
                     outputStream = new FileOutputStream(outputFilename);
                 }
 
+                SearchCriteria searchCriteria = SearchCriteria.createSearchCriteriaFromValue(filter);
+
                 if (filename.endsWith(".xml")) {
-                    xmlFilter.filter(reader, filter, outputStream);
+                    xmlFilter.filter(reader, searchCriteria, outputStream);
                 } else if (filename.endsWith(GZIP_EXTENSION)) {
                     GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
                     reader = new InputStreamReader(gzipInputStream, Config.ENCODING);
-                    xmlFilter.filter(reader, filter, outputStream);
+                    xmlFilter.filter(reader, searchCriteria, outputStream);
                     gzipInputStream.close();
                 } else {
-                    xmlFilter.filter(reader, filter, outputStream);
+                    xmlFilter.filter(reader, searchCriteria, outputStream);
                 }
 
                 reader.close();

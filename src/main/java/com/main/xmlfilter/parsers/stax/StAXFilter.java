@@ -3,7 +3,8 @@ package com.main.xmlfilter.parsers.stax;
 import com.main.xmlfilter.XmlFilter;
 import com.main.xmlfilter.config.Config;
 import com.main.xmlfilter.parsers.stax.elements.ElementType;
-import com.main.xmlfilter.parsers.stax.elements.XMLElement;
+import com.main.xmlfilter.parsers.stax.elements.XmlElement;
+import com.main.xmlfilter.search.SearchCriteria;
 
 import javax.xml.stream.*;
 import java.io.*;
@@ -18,7 +19,7 @@ import java.util.Stack;
  */
 public class StAXFilter implements XmlFilter {
 
-    private String filter;
+    private SearchCriteria searchCriteria;
 
     /**
      * the current depth
@@ -27,7 +28,7 @@ public class StAXFilter implements XmlFilter {
     /**
      * the filtered XML's elements
      */
-    private Stack<XMLElement> elements;
+    private Stack<XmlElement> elements;
     /**
      * indicates that the searched element was found in the current node
      */
@@ -51,11 +52,12 @@ public class StAXFilter implements XmlFilter {
     private String version;
 
     public StAXFilter() {
-        elements = new Stack<XMLElement>();
+        elements = new Stack<XmlElement>();
     }
 
-    public void filter(Reader reader, String filter, OutputStream outputStream) throws Exception {
-        this.filter = filter;
+    @Override
+    public void filter(Reader reader, SearchCriteria searchCriteria, OutputStream outputStream) throws Exception {
+        this.searchCriteria = searchCriteria;
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         inputFactory.setProperty("javax.xml.stream.isValidating", false);
         XMLStreamReader xmlStreamReader = inputFactory.createXMLStreamReader(reader);
@@ -70,6 +72,16 @@ public class StAXFilter implements XmlFilter {
         reader.close();
         writer.flush();
         writer.close();
+    }
+
+    @Override
+    public String getPage(Reader reader, int pageNumber) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void updatePage(Reader reader, String pageContent, int pageNumber) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /**
@@ -104,18 +116,17 @@ public class StAXFilter implements XmlFilter {
     }
 
     private void startElement(XMLStreamReader reader) {
-        String fullName = getFullName(reader.getPrefix(), reader.getLocalName());
         Map<String, String> attributes = buildAttributeMap(reader);
-        elements.push(new XMLElement(ElementType.START, reader.getPrefix(), reader.getLocalName(), null, attributes));
+        String prefix = reader.getPrefix();
+        String localName = reader.getLocalName();
+        XmlElement item = XmlElement.createStartElement(attributes, prefix, localName);
+        elements.push(item);
 
         // if search depth has not been reached, don't start searching
         if (depth >= config.getSearchDepth()) {
-            if (config.match(filter, fullName)) {
-                found = true;
-                lastFoundDepth = depth;
-            } else if (attributes.size() > 0) {
+            if (attributes.size() > 0) {
                 for (String attributeName : attributes.keySet()) {
-                    if (config.match(filter, attributes.get(attributeName)) || config.match(filter, attributeName)) {
+                    if (searchCriteria.matchAttribute(attributes.get(attributeName))) {
                         found = true;
                         lastFoundDepth = depth;
                         break;
@@ -143,7 +154,10 @@ public class StAXFilter implements XmlFilter {
 
     private void endElement(XMLStreamReader reader) {
         String qName = getFullName(reader.getPrefix(), reader.getLocalName());
-        elements.push(new XMLElement(ElementType.END, reader.getPrefix(), reader.getLocalName(), null, null));
+        String prefix = reader.getPrefix();
+        String localName = reader.getLocalName();
+        XmlElement item = XmlElement.createEndElement(prefix, localName);
+        elements.push(item);
         depth--;
 
         if (depth <= config.getSearchDepth() && !found) {
@@ -175,18 +189,19 @@ public class StAXFilter implements XmlFilter {
             return;
         }
 
-        if (config.match(filter, data)) {
+        if (searchCriteria.matchData(data)) {
             found = true;
             lastFoundDepth = depth;
         }
-        elements.push(new XMLElement(ElementType.DATA, null, null, data, null));
+        XmlElement item = XmlElement.createDataElement(data);
+        elements.push(item);
     }
 
     private void endDocument(XMLStreamWriter writer) throws XMLStreamException {
         writer.writeStartDocument(encoding, version);
-        for (XMLElement element : elements) {
+        for (XmlElement element : elements) {
             switch (element.getType()) {
-                case START:
+                case START_ELEMENT:
                     writer.writeStartElement(element.getPrefix() != null ? element.getPrefix() : "", element.getLocalName(), "");
                     Map<String, String> attributes = element.getAttributes();
                     if (attributes != null && attributes.size() > 0) {
@@ -198,7 +213,7 @@ public class StAXFilter implements XmlFilter {
                 case DATA:
                     writer.writeCharacters(element.getData());
                     break;
-                case END:
+                case END_ELEMENT:
                     writer.writeEndElement();
                     break;
             }
@@ -210,7 +225,7 @@ public class StAXFilter implements XmlFilter {
         // remove first node with identical name
         do {
             elements.pop();
-            XMLElement element = elements.peek();
+            XmlElement element = elements.peek();
             nodeFound = qName.equals(getFullName(element.getPrefix(), element.getLocalName()));
         } while (!nodeFound);
 
@@ -221,11 +236,11 @@ public class StAXFilter implements XmlFilter {
         String name = config.getInsertionName();
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put(name + "Attr", name + "Value");
-        elements.push(new XMLElement(ElementType.START, null, name, null, attributes));
-        elements.push(new XMLElement(ElementType.START, null, name + "Child", null, null));
-        elements.push(new XMLElement(ElementType.DATA, null, null, name + "Data", null));
-        elements.push(new XMLElement(ElementType.END, null, name + "Child", null, null));
-        elements.push(new XMLElement(ElementType.END, null, name, null, null));
+        elements.push(XmlElement.createStartElement(attributes, null, name));
+        elements.push(XmlElement.createStartElement(null, null, name + "Child"));
+        elements.push(XmlElement.createDataElement(name + "Data"));
+        elements.push(XmlElement.createEndElement(null, name + "Child"));
+        elements.push(XmlElement.createEndElement(null, name));
     }
 
     private String getFullName(String prefix, String local) {
@@ -245,7 +260,7 @@ public class StAXFilter implements XmlFilter {
         InputStream inputStream = new FileInputStream(filename);
         Reader reader = new InputStreamReader(inputStream, Config.ENCODING);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
-        new StAXFilter().filter(reader, filter, outputStream);
+        new StAXFilter().filter(reader, SearchCriteria.createSearchCriteriaFromValue(filter), outputStream);
         inputStream.close();
         outputStream.close();
     }

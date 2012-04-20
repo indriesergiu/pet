@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app>
+
+    <display-name>
+        XML Filter Server
+    </display-name>
+    <description>
+        Offers XML filter services through REST web services
+    </description>
+
+    <servlet>
+        <servlet-name>SimpleServlet</servlet-name>
+        <description>Again, some description</description>
+        <servlet-class>com.main.server.SimpleServlet</servlet-class>
+        <init-param>
+            <param-name>foo</param-name>
+            <param-value>bar</param-value>
+        </init-param>
+    </servlet>
+
+    <!--
+    login
+    http://localhost:9091/xml-filter/login      ?user="John"&pass="secret"
+                   authToken <-
+
+    (&authToken="1kjh123jh") will be required on all following methods
+
+    view
+    http://localhost:9091/xml-filter/view       ?page=2
+                    page 2 <-
+    search
+    http://localhost:9091/xml-filter/search     - POST with JSON search criteria       (optional page)
+                    page 1 of search
+
+    update
+    http://localhost:9091/xml-filter/update     ?page       -POST with JSON string page content
+
+    
+    -->
+    <servlet-mapping>
+        <servlet-name>SimpleServlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
+</web-app>

@@ -2,6 +2,7 @@ package com.main.xmlfilter.parsers.dom;
 
 import com.main.xmlfilter.XmlFilter;
 import com.main.xmlfilter.config.Config;
+import com.main.xmlfilter.search.SearchCriteria;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 
@@ -23,7 +24,7 @@ import java.util.zip.GZIPOutputStream;
  */
 public class DOMFilter implements XmlFilter {
 
-    private String filter;
+    private SearchCriteria searchCriteria;
     private int depth = -1;
     private boolean found = false;
     private boolean firstFound = false;
@@ -34,13 +35,24 @@ public class DOMFilter implements XmlFilter {
      */
     private Config config = Config.getInstance();
 
-    public void filter(Reader reader, String filter, OutputStream outputStream) throws Exception {
+    @Override
+    public void filter(Reader reader, SearchCriteria searchCriteria, OutputStream outputStream) throws Exception {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         document = dBuilder.parse(new InputSource(reader));
-        this.filter = filter;
+        this.searchCriteria = searchCriteria;
         process(document);
         writeOutput(document, outputStream);
+    }
+
+    @Override
+    public String getPage(Reader reader, int pageNumber) {
+        throw new UnsupportedOperationException("DOM does not support this operation yet.");
+    }
+
+    @Override
+    public void updatePage(Reader reader, String pageContent, int pageNumber) {
+        throw new UnsupportedOperationException("DOM does not support this operation yet.");
     }
 
     private void writeOutput(Document doc, OutputStream outputStream) throws TransformerException {
@@ -123,21 +135,18 @@ public class DOMFilter implements XmlFilter {
     }
 
     private void handleText(Node node) {
-        if (config.match(filter, node.getNodeValue())) {
+        if (searchCriteria.matchData(node.getNodeValue())) {
             found = true;
         }
     }
 
     private void handleAttribute(Node node) {
-        if (config.match(filter, node.getNodeName()) || config.match(filter, node.getNodeValue())) {
+        if (searchCriteria.matchAttribute(node.getNodeValue())) {
             found = true;
         }
     }
 
     private void handleElement(Node node) {
-        if (config.match(filter, node.getNodeName())) {
-            found = true;
-        }
         if (node.hasAttributes()) {
             NamedNodeMap attributes = node.getAttributes();
             for (int i = 0; i < attributes.getLength(); i++) {
@@ -154,7 +163,7 @@ public class DOMFilter implements XmlFilter {
         Reader reader = new InputStreamReader(inputStream, Config.ENCODING);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
         GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
-        new DOMFilter().filter(reader, filter, gzipOutputStream);
+        new DOMFilter().filter(reader, SearchCriteria.createSearchCriteriaFromValue(filter), gzipOutputStream);
         inputStream.close();
         gzipOutputStream.finish();
         gzipOutputStream.close();

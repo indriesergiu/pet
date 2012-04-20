@@ -20,7 +20,8 @@ public class Config {
 
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    private java.util.logging.Logger logger = java.util.logging.Logger.getAnonymousLogger();
+    // number of lines in a XML page
+    private int xmlPageSize = 25;
 
     public String USAGE = "XML Filter\n"
                           + "\n"
@@ -81,7 +82,11 @@ public class Config {
         return scheduler;
     }
 
-    public java.util.logging.Logger getLogger() {
-        return logger;
+    public int getXmlPageSize() {
+        return xmlPageSize;
+    }
+
+    public void setXmlPageSize(int xmlPageSize) {
+        this.xmlPageSize = xmlPageSize;
     }
 }

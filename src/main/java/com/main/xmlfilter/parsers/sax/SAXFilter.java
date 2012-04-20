@@ -6,6 +6,7 @@ import com.main.xmlfilter.parsers.sax.elements.DataElement;
 import com.main.xmlfilter.parsers.sax.elements.EndElement;
 import com.main.xmlfilter.parsers.sax.elements.StartElement;
 import com.main.xmlfilter.parsers.sax.elements.XMLElement;
+import com.main.xmlfilter.search.SearchCriteria;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -29,7 +30,7 @@ public class SAXFilter extends DefaultHandler implements XmlFilter {
     /**
      * the filter
      */
-    private String filter;
+    private SearchCriteria searchCriteria;
     /**
      * output file's stream
      */
@@ -69,13 +70,24 @@ public class SAXFilter extends DefaultHandler implements XmlFilter {
         writer = new XMLWriter();
     }
 
-    public void filter(Reader reader, String filter, OutputStream outputStream) throws Exception {
+    @Override
+    public void filter(Reader reader, SearchCriteria searchCriteria, OutputStream outputStream) throws Exception {
         InputSource inputSource = new InputSource(reader);
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
-        this.filter = filter;
+        this.searchCriteria = searchCriteria;
         this.outputStream = outputStream;
         saxParser.parse(inputSource, this);
+    }
+
+    @Override
+    public String getPage(Reader reader, int pageNumber) {
+        throw new UnsupportedOperationException("SAX does not support this operation yet.");
+    }
+
+    @Override
+    public void updatePage(Reader reader, String pageContent, int pageNumber) {
+        throw new UnsupportedOperationException("SAX does not support this operation yet.");
     }
 
     @Override
@@ -84,12 +96,9 @@ public class SAXFilter extends DefaultHandler implements XmlFilter {
 
         // if search depth has not been reached, don't start searching
         if (depth >= config.getSearchDepth()) {
-            if (config.match(filter, qName)) {
-                found = true;
-                lastFoundDepth = depth;
-            } else if (attributes.getLength() > 0) {
+            if (attributes.getLength() > 0) {
                 for (int i = 0; i < attributes.getLength(); i++) {
-                    if (config.match(filter, attributes.getValue(i)) || config.match(filter, attributes.getQName(i))) {
+                    if (searchCriteria.matchAttribute(attributes.getValue(i))) {
                         found = true;
                         lastFoundDepth = depth;
                         break;
@@ -144,7 +153,7 @@ public class SAXFilter extends DefaultHandler implements XmlFilter {
             return;
         }
 
-        if (config.match(filter, data)) {
+        if (searchCriteria.matchData(data)) {
             found = true;
             lastFoundDepth = depth;
         }
@@ -186,7 +195,7 @@ public class SAXFilter extends DefaultHandler implements XmlFilter {
         GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
         Reader reader = new InputStreamReader(gzipInputStream, Config.ENCODING);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
-        new SAXFilter().filter(reader, filter, outputStream);
+        new SAXFilter().filter(reader, SearchCriteria.createSearchCriteriaFromValue(filter), outputStream);
         inputStream.close();
         outputStream.close();
     }
