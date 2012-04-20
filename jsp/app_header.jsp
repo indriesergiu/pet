@@ -1,19 +1,15 @@
 <%--
   Created by IntelliJ IDEA.
   User: sergiu.indrie
-  Date: 4/2/12
-  Time: 3:56 PM
+  Date: 4/3/12
+  Time: 4:56 PM
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
-<head><title>XML Services JSP Client</title></head>
+<head><title>Simple jsp page</title></head>
 <body>
-
-<%--Include the app header--%>
-<%@ include file="app_header.jsp" %>
-
-You have successfully reached the view page.
-
+<div style="background-color: #6495ed;color: white;font-family: fantasy; font: italic; font-size: large; ">XML Services JSP Client</div>
+<br>
 </body>
 </html>
