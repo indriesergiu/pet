@@ -46,7 +46,6 @@
             <c:if test="${viewBean.success}">
                 <%--Page content displayed in text area--%>
                 <textarea rows="27" cols="100" readonly="readonly"><%= viewBean.getPageContent() %></textarea>
-                <%--<br>--%>
             </c:if>
             <c:if test="${viewBean.notFound}">
                 <%--Not found error message--%>

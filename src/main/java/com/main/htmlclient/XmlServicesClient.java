@@ -49,7 +49,9 @@ public class XmlServicesClient {
         try {
             String charset = ClientConstants.DEFAULT_ENCODING;
             String query = String.format("user=%s&pass=%s", URLEncoder.encode(user, charset), URLEncoder.encode(pass, charset));
+            logger.info("Performing LOGIN with credentials: " + query);
             URL url = new URL(SERVER_URL + "login?" + query);
+            logger.debug("LOGIN URL is " + url.toString());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             ResponseData responseData = new ResponseData(connection.getResponseMessage(), connection.getResponseCode());
@@ -59,8 +61,11 @@ public class XmlServicesClient {
                 responseData.setCookies(cookies);
             }
 
+            logger.debug("Response data received: " + responseData);
+
             return responseData;
         } catch (Exception e) {
+            logger.error("An error has occurred during LOGIN.", e);
             throw new HttpClientException("An error has occurred during authentication.", e);
         }
     }
@@ -82,6 +87,8 @@ public class XmlServicesClient {
                 logger.debug("Adding cookies:{" + cookiesAsString + "} to request.");
             }
 
+            logger.info("Performing VIEW with URL=" + fullUrl + " and cookies=" + cookiesAsString);
+
             connection.setRequestProperty(HTTP_HEADER_ACCEPT_ENCODING, GZIP_ENCODING);
 
             // check request status
@@ -102,9 +109,12 @@ public class XmlServicesClient {
                 responseData.getHeader().put(HTTP_HEADER_CACHE_CONTROL, cacheControlHeader);
             }
 
+            logger.debug("Response data received: " + responseData);
+
             return responseData;
 
         } catch (Exception e) {
+            logger.error("An error has occurred during VIEW.", e);
             throw new HttpClientException("An error has occurred during authentication.", e);
         }
     }
@@ -127,6 +137,8 @@ public class XmlServicesClient {
 
             // convert searchCriteria object to string
             String searchCriteriaInJson = jsonConverter.writeValueAsString(searchCriteria);
+
+            logger.info("Performing SEARCH with URL=" + fullUrl + ", cookies=" + cookiesAsString + " and searchCriteria=" + searchCriteria);
 
             // send search criteria
             Closeable outputStreamWriter = sendCompressedRequestBody(connection, searchCriteriaInJson);
@@ -151,9 +163,12 @@ public class XmlServicesClient {
                 responseData.getHeader().put(HTTP_HEADER_CACHE_CONTROL, cacheControlHeader);
             }
 
+            logger.debug("Response data received: " + responseData);
+
             return responseData;
 
         } catch (Exception e) {
+            logger.error("An error has occurred during SEARCH.", e);
             throw new HttpClientException("An error has occurred during authentication.", e);
         }
     }
@@ -172,6 +187,8 @@ public class XmlServicesClient {
                 logger.debug("Adding cookies:{" + cookiesAsString + "} to request.");
             }
 
+            logger.info("Performing UPDATE with page=" + pageContent + ", cookies=" + cookiesAsString + " and pageContent=\n" + pageContent);
+
             // send search criteria
             Closeable outputStreamWriter = sendCompressedRequestBody(connection, pageContent);
 
@@ -187,9 +204,12 @@ public class XmlServicesClient {
             outputStreamWriter.close();
             ResponseData responseData = new ResponseData("", responseCode, connection.getResponseMessage());
 
+            logger.debug("Response data received: " + responseData);
+
             return responseData;
 
         } catch (Exception e) {
+            logger.error("An error has occurred during UPDATE.", e);
             throw new HttpClientException("An error has occurred during authentication.", e);
         }
     }

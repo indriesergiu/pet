@@ -150,9 +150,10 @@
 
     <target name="deploy-all" depends="deploy-xml-services, deploy-jsp-client"/>
 
-    <!--Start Servers in browser-->
     <property name="browser" value="c:\Program Files (x86)\Mozilla Firefox\firefox.exe"/>
-    <target name="start-in-browser" depends="clean-deploys, deploy-all">
+
+    <!--Start Servers in browser-->
+    <target name="startup" depends="shutdown, clean-deploys, deploy-all">
         <exec executable="${browser}" spawn="yes">
             <arg line="http://localhost:8080/xml_services"/>
         </exec>

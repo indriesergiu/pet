@@ -42,9 +42,15 @@
 
     <tr>
         <td>
-            <%--Page content displayed in text area--%>
-            <textarea rows="27" cols="100" readonly="readonly"><%= searchBean.getPageContent() %></textarea>
-            <br>
+            <c:if test="${searchBean.success}">
+                <%--Page content displayed in text area--%>
+                <textarea rows="27" cols="100" readonly="readonly"><%= searchBean.getPageContent() %></textarea>
+                <%--<br>--%>
+            </c:if>
+            <c:if test="${searchBean.notFound}">
+                <%--Not found error message--%>
+                <textarea rows="27" cols="100" readonly="readonly">Page ${searchBean.page} was not found.</textarea>
+            </c:if>
         </td>
     </tr>
 
