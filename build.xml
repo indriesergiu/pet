@@ -33,7 +33,7 @@
     <property name="build.classes.dir" value="${build.dir}/classes"/>
     <property name="build.jar.dir" value="${build.dir}/jar"/>
 
-    <!--XML Services properties-->
+    <!--XML Services properties-->          <!--Remember to add CATALINA_PATH to startup/shutdown scripts-->
     <property name="xml_services.tomcat.home" value="d:/programe/apache-tomcat-7.0.26"/>
     <property name="xml_services.server.name" value="xml_services"/>
 
@@ -132,6 +132,7 @@
 
     <!--Deploy XML Services-->
     <target name="deploy-xml-services" depends="xml-services-war">
+        <exec executable="${xml_services.tomcat.home}\bin\shutdown.bat"/>
         <delete dir="${xml_services.tomcat.home}/${deploy.dir}/${xml_services.server.name}"/>
         <delete file="${xml_services.tomcat.home}/${deploy.dir}/${xml_services.server.name}.war"/>
         <copy file="${build.dir}/${xml_services.server.name}.war" toDir="${xml_services.tomcat.home}/${deploy.dir}"/>
@@ -140,6 +141,7 @@
 
     <!--Deploy JSP Client-->
     <target name="deploy-jsp-client" depends="jsp-client-war">
+        <exec executable="${jsp_client.tomcat.home}\bin\shutdown.bat"/>
         <delete dir="${jsp_client.tomcat.home}/${deploy.dir}/${jsp_client.server.name}"/>
         <delete file="${jsp_client.tomcat.home}/${deploy.dir}/${jsp_client.server.name}.war"/>
         <copy file="${build.dir}/${jsp_client.server.name}.war" toDir="${jsp_client.tomcat.home}/${deploy.dir}"/>
@@ -147,6 +149,17 @@
     </target>
 
     <target name="deploy-all" depends="deploy-xml-services, deploy-jsp-client"/>
+
+    <!--Start Servers in browser-->
+    <property name="browser" value="c:\Program Files (x86)\Mozilla Firefox\firefox.exe"/>
+    <target name="start-in-browser" depends="clean-deploys, deploy-all">
+        <exec executable="${browser}" spawn="yes">
+            <arg line="http://localhost:8080/xml_services"/>
+        </exec>
+        <exec executable="${browser}" spawn="yes">
+            <arg line="http://localhost:8081/jsp_client/login.jsp"/>
+        </exec>
+    </target>
 
     <!--Deprecated-->
     <target name="run" depends="jar">
@@ -184,6 +197,13 @@
         </java>
     </target>
 
+    <!--Shutdown the servers-->
+    <target name="shutdown">
+        <exec executable="${xml_services.tomcat.home}\bin\shutdown.bat"/>
+        <exec executable="${jsp_client.tomcat.home}\bin\shutdown.bat"/>
+    </target>
+
+    <!--Remove the deployments-->
     <target name="clean-deploys">
         <delete dir="${xml_services.tomcat.home}/${deploy.dir}/${xml_services.server.name}"/>
         <delete file="${xml_services.tomcat.home}/${deploy.dir}/${xml_services.server.name}.war"/>

@@ -29,8 +29,9 @@
                 response.addCookie(cookie);
             }
         %>
-        <%--forward to the view page--%>
-        <jsp:forward page="view.jsp"/>
+        <%--redirect (in order to obtain the cookies in the request) to the view page--%>
+        <c:redirect url="view.jsp"/>
+
     </c:when>
     <c:otherwise>
         <%--LOGIN FAILED--%>
