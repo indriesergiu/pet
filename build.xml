@@ -4,6 +4,9 @@
 
    First configure the two Tomcat instances (xml_services.tomcat.home on port 8080 and jsp_client.tomcat.home on port 8081)
 
+   Configure the logging.properties file from xml-filter\WEB-INF\web.xml, context parameter LOGGING_CONFIG_FILE; and the data file, context parameter DMOZ_DATA_FILE
+   (A sample logging.properties file can be found in conf/xml_services, and a sample data file can be found in resources/books.xml)
+
    To run type:
 
         ant startup
@@ -96,16 +99,14 @@
 
     <!--JSP Client WAR-->
     <target name="jsp-client-war" depends="compile, search-jar">
-        <!--rename the logging properties file-->
-        <copy file="conf/jsp_client_logging.properties" tofile="${build.dir}/logging.properties"/>
         <war destfile="${build.dir}/${jsp_client.server.name}.war" webxml="jsp/web.xml">
             <zipfileset dir="jsp">
                 <exclude name="web.xml"/>
             </zipfileset>
-            <webinf file="${build.dir}/logging.properties"/>
+            <webinf file="conf/jsp_client/logging.properties"/>
 
             <!--Tomcat logging-->
-            <webinf file="d:\down\logging.properties" prefix="WEB-INF/classes"/>
+            <webinf file="conf\tomcat\logging.properties" prefix="WEB-INF/classes"/>
             <lib dir="lib">
                 <!-- remove Servlet classes since they break Tomcat startup -->
                 <exclude name="javax.*"/>
