@@ -20,8 +20,8 @@ import java.util.zip.GZIPOutputStream;
  */
 public class HttpClient {
 
-    //    private static final String SERVER_URL = "http://localhost:8080/xml_services/";
-    private static final String SERVER_URL = "http://localhost:8080/";
+        private static final String SERVER_URL = "http://localhost:8080/xml_services/";
+//    private static final String SERVER_URL = "http://localhost:8080/";
     private static final String GZIP_ENCODING = "gzip";
 
     //    HTTP headers

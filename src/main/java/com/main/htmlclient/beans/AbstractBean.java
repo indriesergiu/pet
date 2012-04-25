@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
+ * Provides basic behavior needed by server beans such as whether the response object (status, cookies etc.).
  *
  * @author Sergiu Indrie
  */

@@ -13,6 +13,7 @@ import javax.servlet.ServletContextListener;
  */
 public class ApplicationServletContextListener implements ServletContextListener {
 
+    @Override
     public void contextInitialized(ServletContextEvent event) {
         ServletContext ctx = event.getServletContext();
 
@@ -23,9 +24,9 @@ public class ApplicationServletContextListener implements ServletContextListener
         String file = "WEB-INF" + System.getProperty("file.separator") + "logging.properties";
 
         PropertyConfigurator.configure(prefix + file);
-        System.out.println("Log4J Logging started for application: " + prefix + file);
     }
 
+    @Override
     public void contextDestroyed(ServletContextEvent event) {
 
     }

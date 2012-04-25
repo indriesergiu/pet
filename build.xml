@@ -2,6 +2,8 @@
 
     <!--
 
+    ///// JSP Client /////
+
    First configure the two Tomcat instances (xml_services.tomcat.home on port 8080 and jsp_client.tomcat.home on port 8081)
 
    Configure the logging.properties file from xml-filter\WEB-INF\web.xml, context parameter LOGGING_CONFIG_FILE; and the data file, context parameter DMOZ_DATA_FILE
@@ -16,6 +18,26 @@
         ant shutdown
 
    An additional configuration is ${browser} which is used to open the servers' web pages
+
+   ///// HTTP Client /////
+
+   To run type:
+
+        ant client-console
+
+   Example commands
+
+   (l=login, v=view, s=search, u=update, q=quit)
+
+   l Guest GuestPass
+
+   v 0
+
+   s 0 {"searchItems":[{"searchItemType":"ATTRIBUTE","value":"trip"},{"searchItemType":"DATA","value":"trip"}]}
+
+   u 0 D:\down\temp\a.txt
+
+   q
 
     -->
 
@@ -50,7 +72,6 @@
 
     <!--http client console-->
     <property name="src.clientconsole.dir" value="${src.dir}/main/java/com/main/httpclient"/>
-    <property name="lib.clientconsole.dir" value="${lib.dir}/client"/>
 
     <property name="main-class" value="com.main.xmlfilter.XmlFilterMain"/>
 
@@ -61,7 +82,10 @@
     </path>
 
     <path id="client-console-classpath">
-        <fileset dir="${lib.clientconsole.dir}" includes="**/*.jar"/>
+        <fileset dir="${lib.dir}">
+            <include name="commons-io-2.1.jar"/>
+            <include name="log4j-1.2.16.jar"/>
+        </fileset>
     </path>
 
     <!--Clean all-->
@@ -153,7 +177,7 @@
     </target>
 
     <!--Run the Http Client Console-->
-    <target name="client-console" depends="clean">
+    <target name="client-console" depends="clean, deploy-xml-services">
         <mkdir dir="${build.dir}/client-console"/>
         <javac srcdir="${src.clientconsole.dir}" destdir="${build.dir}/client-console" includeantruntime="false">
             <classpath>
