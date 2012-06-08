@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Universal XML element
  *
- * @author sergiu.indrie // todo move to upper level
+ * @author sergiu.indrie 
  */
 public class XmlElement {
 
