@@ -1,0 +1,49 @@
+<project name="xml-services-jsp-client" basedir="." default="war">
+
+    <!--build internal variables-->
+    <property name="src.dir" value="src"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="build.dir" value="build"/>
+    <property name="build.classes.dir" value="${build.dir}/classes"/>
+    <property name="build.war.dir" value="${build.dir}/war"/>
+
+    <!--Clean all-->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+
+    <!--Compile all-->
+    <target name="compile">
+        <mkdir dir="${build.classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}" classpathref="classpath" includeantruntime="false">
+            <include name="**/*.java"/>
+        </javac>
+    </target>
+
+    <!--War-->
+    <target name="war" depends="compile">
+        <war destfile="${build.war.dir}/${ant.project.name}.war" webxml="src/main/webapp/WEB-INF/web.xml">
+            <zipfileset dir="src/main/webapp/jsp" prefix="jsp"/>
+            <fileset dir="src/main/webapp" includes="*.html"/>
+            <webinf file="src/main/resources/logging.properties"/>
+            <lib dir="lib">
+                <!-- remove Servlet classes since they break Tomcat startup -->
+                <exclude name="javax.*"/>
+            </lib>
+            <classes dir="${build.classes.dir}"/>
+            <manifest>
+                <attribute name="Specification-Title" value="XML Services JSP Client"/>
+                <attribute name="Specification-Vendor" value="Sergiu Pet-Project"/>
+                <attribute name="Specification-Version" value="0.1"/>
+            </manifest>
+        </war>
+    </target>
+
+    <!--Clean build-->
+    <target name="clean-build" depends="clean, war"/>
+
+</project>

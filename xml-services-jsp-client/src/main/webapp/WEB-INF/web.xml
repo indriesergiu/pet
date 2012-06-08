@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app>
+
+    <display-name>
+        XML Services JSP Client
+    </display-name>
+    <description>
+        Offers XML filter services through a JSP Client
+    </description>
+
+    <!--used for logging init-->
+    <listener>
+        <listener-class>
+            com.xmlservices.jspclient.htmlclient.ApplicationServletContextListener
+        </listener-class>
+    </listener>
+
+</web-app>

@@ -1,0 +1,39 @@
+<project name="xml-services-client-console" basedir="." default="jar">
+
+    <!--build internal variables-->
+    <property name="src.dir" value="src"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="build.dir" value="build"/>
+    <property name="build.classes.dir" value="${build.dir}/classes"/>
+    <property name="build.jar.dir" value="${build.dir}/jar"/>
+
+    <!--Clean all-->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+
+    <!--Compile all-->
+    <target name="compile">
+        <mkdir dir="${build.classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}" classpathref="classpath" includeantruntime="false"/>
+    </target>
+
+    <!--Jar-->
+    <target name="jar" depends="compile">
+        <mkdir dir="${build.jar.dir}"/>
+        <jar destfile="${build.jar.dir}/${ant.project.name}.jar" basedir="${build.classes.dir}">
+            <zipgroupfileset dir="${lib.dir}" includes="*.jar"/>
+            <file file="src/main/resources/console.properties"/>
+            <manifest>
+                <attribute name="Main-Class" value="com.xmlservices.consoleclient.HttpClientConsole"/>
+            </manifest>
+        </jar>
+        <!--TODO - could not get the jar to run using the Manifest.txt file-->
+        <!--<jar destfile="${build.jar.dir}/${ant.project.name}.jar" basedir="${build.classes.dir}" manifest="Manifest.txt"/>-->
+    </target>
+
+</project>

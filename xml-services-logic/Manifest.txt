@@ -1,0 +1,8 @@
+
+Name: com/xmlservices/logic/
+Specification-Title: XML Services Logic
+Specification-Version: 0.1
+Specification-Vendor: Example Tech, Inc.
+Implementation-Title: com.xmlservices.logic
+Implementation-Version: build01
+Implementation-Vendor: Example Tech, Inc.

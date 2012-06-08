@@ -1,0 +1,42 @@
+<project name="xml-services-server" basedir="." default="war">
+
+    <!--build internal variables-->
+    <property name="src.dir" value="src"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="build.dir" value="build"/>
+    <property name="build.classes.dir" value="${build.dir}/classes"/>
+    <property name="build.war.dir" value="${build.dir}/war"/>
+
+    <!--Clean all-->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+
+    <!--Compile all-->
+    <target name="compile">
+        <mkdir dir="${build.classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}" classpathref="classpath" includeantruntime="false">
+            <include name="**/*.java"/>
+        </javac>
+    </target>
+
+    <!--War-->
+    <target name="war" depends="compile">
+        <war destfile="${build.war.dir}/${ant.project.name}.war" webxml="src/main/webapp/WEB-INF/web.xml">
+            <fileset dir="src/main/webapp" includes="*.html"/>
+            <lib dir="lib">
+                <!-- remove Servlet classes since they break Tomcat startup -->
+                <exclude name="javax.*"/>
+            </lib>
+            <classes dir="${build.classes.dir}"/>
+        </war>
+    </target>
+
+    <!--Clean build-->
+    <target name="clean-build" depends="clean, war"/>
+
+</project>

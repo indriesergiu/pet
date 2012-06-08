@@ -1,0 +1,5 @@
+
+Name: com/xmlservices/consoleclient/
+Main-Class: com.xmlservices.consoleclient.HttpClientConsole
+
+
