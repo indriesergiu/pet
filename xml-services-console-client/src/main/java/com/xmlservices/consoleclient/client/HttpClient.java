@@ -30,7 +30,7 @@ public class HttpClient {
     private static final String GZIP_ENCODING = "gzip";
 
     //   Configuration properties
-    private static final String PROPERTY_serverUrl = "server.url";
+    private static final String PROPERTY_SERVER_URL = "server.url";
 
     private String serverUrl;
 
@@ -52,14 +52,14 @@ public class HttpClient {
         logger.debug("Finished configuration loading.");
 
         // set properties
-        serverUrl = properties.getProperty(PROPERTY_serverUrl);
+        serverUrl = properties.getProperty(PROPERTY_SERVER_URL);
         
         validateConfiguration();
     }
 
     private void validateConfiguration() {
         if (serverUrl == null || serverUrl.trim().isEmpty()) {
-            throw new IllegalArgumentException("Invalid " + PROPERTY_serverUrl + " value=" + serverUrl);
+            throw new IllegalArgumentException("Invalid " + PROPERTY_SERVER_URL + " value=" + serverUrl);
         }
         logger.debug("Configuration was successfully validated.");
     }

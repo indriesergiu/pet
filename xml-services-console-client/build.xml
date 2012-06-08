@@ -29,6 +29,7 @@
         <jar destfile="${build.jar.dir}/${ant.project.name}.jar" basedir="${build.classes.dir}">
             <zipgroupfileset dir="${lib.dir}" includes="*.jar"/>
             <file file="src/main/resources/console.properties"/>
+            <zipfileset prefix="i18n" dir="src/main/resources/i18n"/>
             <manifest>
                 <attribute name="Main-Class" value="com.xmlservices.consoleclient.HttpClientConsole"/>
             </manifest>
