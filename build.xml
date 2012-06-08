@@ -6,15 +6,15 @@
 
     <!--Build all modules-->
     <target name="build">
-        <subant target="main" genericantfile="build.xml">
-            <fileset dir="."/>
+        <subant target="" antfile="build.xml">
+            <fileset dir="." includes="*/build.xml"/>
         </subant>
     </target>
 
     <!--Clean all modules-->
     <target name="clean">
-        <subant target="clean" genericantfile="build.xml">
-            <fileset dir="."/>
+        <subant target="clean" antfile="build.xml">
+            <fileset dir="." includes="*/build.xml"/>
         </subant>
     </target>
 

@@ -20,6 +20,9 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="xml-services-jsp-client-lib" level="project" />
+    <javadoc-paths>
+      <root url="http://docs.oracle.com/javaee/6/api/" />
+    </javadoc-paths>
   </component>
 </module>
 

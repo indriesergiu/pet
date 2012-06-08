@@ -2,9 +2,7 @@ package com.xmlservices.server;
 
 import org.apache.log4j.Logger;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,17 +16,13 @@ import java.util.Map;
  */
 public class LoginServlet extends HttpServlet {
 
-    public static final String SESSION_ID_COOKIE = "sid";
-
     public static final String USERNAME = "user";
     public static final String PASSWORD = "pass";
-    private static final int MILLION = 1000000;
 
     private static final Logger log = Logger.getLogger(LoginServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, java.io.IOException {
-        ServletContext context = req.getServletContext();
 
         String user;
         user = req.getParameter(USERNAME);
@@ -48,7 +42,8 @@ public class LoginServlet extends HttpServlet {
 
         if (login(user, pass)) {
             log.info("User " + user + " was successfully authenticated.");
-            addSessionCookie(context, resp);
+            req.getSession().setAttribute(ServerConstants.USERNAME, user);
+            req.getSession().setAttribute(ServerConstants.PASSWORD, pass);
             resp.setStatus(HttpServletResponse.SC_ACCEPTED);
         } else {
             log.info("User " + user + " failed to be authenticated.");
@@ -76,12 +71,4 @@ public class LoginServlet extends HttpServlet {
         return map;
     }
 
-    private void addSessionCookie(ServletContext context, HttpServletResponse resp) {
-        String value = String.valueOf((long) (Math.random() * MILLION));
-        Cookie cookie = new Cookie(SESSION_ID_COOKIE, value);
-        log.debug("Adding session cookie with value=" + value);
-        Map<String, Cookie> sessionCookies = (Map<String, Cookie>) context.getAttribute(ServerConstants.SESSION_COOKIES);
-        sessionCookies.put(value, cookie);
-        resp.addCookie(cookie);
-    }
 }
