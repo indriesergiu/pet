@@ -1,8 +1,10 @@
-package com.xmlservices.server;
+package com.xmlservices.server.servlet;
 
 import com.xmlservices.logic.api.XmlService;
 import com.xmlservices.logic.api.XmlServiceException;
 import com.xmlservices.logic.api.XmlServiceFactory;
+import com.xmlservices.server.util.ParameterExtractor;
+import com.xmlservices.server.ServerConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;

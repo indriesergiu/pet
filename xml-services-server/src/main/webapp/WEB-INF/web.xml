@@ -13,25 +13,25 @@
     <servlet>
         <servlet-name>ViewServlet</servlet-name>
         <description>Handles the 'view' call</description>
-        <servlet-class>com.xmlservices.server.ViewServlet</servlet-class>
+        <servlet-class>com.xmlservices.server.servlet.ViewServlet</servlet-class>
     </servlet>
 
     <servlet>
         <servlet-name>UpdateServlet</servlet-name>
         <description>Handles the 'update' call</description>
-        <servlet-class>com.xmlservices.server.UpdateServlet</servlet-class>
+        <servlet-class>com.xmlservices.server.servlet.UpdateServlet</servlet-class>
     </servlet>
 
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <description>Handles the 'login' call</description>
-        <servlet-class>com.xmlservices.server.LoginServlet</servlet-class>
+        <servlet-class>com.xmlservices.server.servlet.LoginServlet</servlet-class>
     </servlet>
 
     <servlet>
         <servlet-name>SearchServlet</servlet-name>
         <description>Handles the 'search' call</description>
-        <servlet-class>com.xmlservices.server.SearchServlet</servlet-class>
+        <servlet-class>com.xmlservices.server.servlet.SearchServlet</servlet-class>
     </servlet>
 
     <!--servlet mappings (I'm hoping order matters)-->

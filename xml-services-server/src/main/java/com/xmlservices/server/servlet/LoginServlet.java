@@ -1,5 +1,6 @@
-package com.xmlservices.server;
+package com.xmlservices.server.servlet;
 
+import com.xmlservices.server.ServerConstants;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;

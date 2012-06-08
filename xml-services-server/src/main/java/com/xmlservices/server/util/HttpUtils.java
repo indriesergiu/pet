@@ -1,4 +1,4 @@
-package com.xmlservices.server;
+package com.xmlservices.server.util;
 
 import javax.servlet.http.HttpServletResponse;
 

@@ -1,6 +1,6 @@
 package com.xmlservices.server.filter;
 
-import com.xmlservices.server.HttpUtils;
+import com.xmlservices.server.util.HttpUtils;
 import com.xmlservices.server.filter.compression.GZIPRequestWrapper;
 import com.xmlservices.server.filter.compression.GZIPResponseWrapper;
 import org.apache.log4j.Logger;

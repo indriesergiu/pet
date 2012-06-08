@@ -1,8 +1,11 @@
-package com.xmlservices.server;
+package com.xmlservices.server.servlet;
 
 import com.xmlservices.logic.api.XmlServiceException;
 import com.xmlservices.logic.api.XmlServiceFactory;
 import com.xmlservices.logic.api.search.SearchCriteria;
+import com.xmlservices.server.util.HttpUtils;
+import com.xmlservices.server.util.ParameterExtractor;
+import com.xmlservices.server.ServerConstants;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 

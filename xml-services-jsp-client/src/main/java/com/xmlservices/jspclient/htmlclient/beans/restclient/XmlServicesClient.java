@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.zip.GZIPInputStream;
@@ -22,9 +23,12 @@ import java.util.zip.GZIPOutputStream;
  */
 public class XmlServicesClient {
 
-    private static final String SERVER_URL = "http://localhost:8080/xml_services/";
-    private static final String GZIP_ENCODING = "gzip";
+    /**
+     * The XML Services Server URL (REST server)
+     */
+    private String serverUrl;
 
+    private static final String GZIP_ENCODING = "gzip";
     private static final String DEFAULT_ENCODING = "UTF-8";
 
     //    HTTP headers
@@ -51,14 +55,16 @@ public class XmlServicesClient {
             String charset = DEFAULT_ENCODING;
             String query = String.format("user=%s&pass=%s", URLEncoder.encode(user, charset), URLEncoder.encode(pass, charset));
             logger.info("Performing LOGIN with credentials: " + query);
-            URL url = new URL(SERVER_URL + "login?" + query);
+            URL url = new URL(serverUrl + "login?" + query);
             logger.debug("LOGIN URL is " + url.toString());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             ResponseData responseData = new ResponseData(connection.getResponseMessage(), connection.getResponseCode());
 
             if (connection.getResponseCode() == HttpURLConnection.HTTP_ACCEPTED) {
-                Cookie[] cookies = getCookies(connection.getHeaderField(HTTP_HEADER_SET_COOKIE));
+                String cookiesAsString = connection.getHeaderField(HTTP_HEADER_SET_COOKIE);
+                logger.debug("Obtained cookies: " + cookiesAsString);
+                Cookie[] cookies = getCookies(cookiesAsString);
                 responseData.setCookies(cookies);
             }
 
@@ -75,7 +81,7 @@ public class XmlServicesClient {
         try {
             String charset = DEFAULT_ENCODING;
             String query = String.format("page=%s", URLEncoder.encode(page, charset));
-            String fullUrl = SERVER_URL + "view?" + query;
+            String fullUrl = serverUrl + "view?" + query;
 
             // resource could not be obtained from cache
             URL url = new URL(fullUrl);
@@ -124,7 +130,7 @@ public class XmlServicesClient {
         try {
             String charset = DEFAULT_ENCODING;
             String query = String.format("page=%s", URLEncoder.encode(page, charset));
-            String fullUrl = SERVER_URL + "search?" + query;
+            String fullUrl = serverUrl + "search?" + query;
 
             URL url = new URL(fullUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -178,7 +184,7 @@ public class XmlServicesClient {
         try {
             String charset = DEFAULT_ENCODING;
             String query = String.format("page=%s", URLEncoder.encode(page, charset));
-            URL url = new URL(SERVER_URL + "update?" + query);
+            URL url = new URL(serverUrl + "update?" + query);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             // set cookies
@@ -234,7 +240,13 @@ public class XmlServicesClient {
         for (String cookie : cookiesAsString.split(";")) {
             String[] split = cookie.split("=");
             if (split.length == 2) {
-                result.add(new Cookie(split[0], split[1]));
+                String value = split[1];
+                String name = split[0];
+                try {
+                    result.add(new Cookie(name, value));
+                } catch (Exception e) {
+                    logger.warn(MessageFormat.format("Could not construct cookie {0}:{1}", name, value), e);
+                }
             } else {
                 logger.warn("Could not store invalid cookie: " + cookie);
             }
@@ -266,5 +278,9 @@ public class XmlServicesClient {
         outputStreamWriter.flush();
         outputStreamWriter.close();
         return gzipOutputStream;
+    }
+
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
     }
 }
