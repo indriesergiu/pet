@@ -1,259 +1,69 @@
-<project name="xml-filter" basedir="." default="main">
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="xml-filter" basedir="." default="build">
 
-    <!--
+    <!--import the properties file-->
+    <property file="build.properties"/>
 
-    ///// JSP Client /////
+    <!--Build all modules-->
+    <target name="build">
+        <subant target="main" genericantfile="build.xml">
+            <fileset dir="."/>
+        </subant>
+    </target>
 
-   First configure the two Tomcat instances (xml_services.tomcat.home on port 8080 and jsp_client.tomcat.home on port 8081)
-
-   Configure the logging.properties file from xml-filter\WEB-INF\web.xml, context parameter LOGGING_CONFIG_FILE; and the data file, context parameter DMOZ_DATA_FILE
-   (A sample logging.properties file can be found in conf/xml_services, and a sample data file can be found in resources/books.xml)
-
-   To run type:
-
-        ant startup
-
-   To stop type:
-
-        ant shutdown
-
-   An additional configuration is ${browser} which is used to open the servers' web pages
-
-   ///// HTTP Client /////
-
-   To run type:
-
-        ant client-console
-
-   Example commands
-
-   (l=login, v=view, s=search, u=update, q=quit)
-
-   l Guest GuestPass
-
-   v 0
-
-   s 0 {"searchItems":[{"searchItemType":"ATTRIBUTE","value":"trip"},{"searchItemType":"DATA","value":"trip"}]}
-
-   u 0 D:\down\temp\a.txt
-
-   q
-
-    -->
-
-    <!--input parameters default values (they are overridden by command line values)-->
-    <property name="file" value="d:/sample.xml"/>
-    <property name="filter" value="apple"/>
-    <property name="outputFile" value="d:/out.xml"/>
-    <property name="inputNodeName" value="Lala"/>
-    <property name="parser" value="dom"/>
-    <property name="gzip" value="false"/>
-    <property name="memoryTracker" value="runtime"/>
-    <property name="help" value="false"/>
-
-    <!--build internal variables-->
-    <property name="src.dir" value="src"/>
-    <property name="lib.dir" value="lib"/>
-    <property name="build.dir" value="build"/>
-    <property name="build.classes.dir" value="${build.dir}/classes"/>
-    <property name="build.jar.dir" value="${build.dir}/jar"/>
-
-    <!--XML Services properties-->          <!--Remember to add CATALINA_PATH to startup/shutdown scripts-->
-    <property name="xml_services.tomcat.home" value="d:/programe/apache-tomcat-7.0.26"/>
-    <property name="xml_services.server.name" value="xml_services"/>
-
-    <!--JSP Client Properties-->
-    <property name="jsp_client.tomcat.home" value="d:/programe/apache-tomcat-7.0.22"/>
-    <property name="jsp_client.server.name" value="jsp_client"/>
-
-    <!--misc-->
-    <property name="deploy.dir" value="webapps"/>
-    <property name="search.api.jar" value="${xml_services.server.name}-search-api.jar"/>
-
-    <!--http client console-->
-    <property name="src.clientconsole.dir" value="${src.dir}/main/java/com/main/httpclient"/>
-
-    <property name="main-class" value="xmlfilter.XmlFilterMain"/>
-
-    <path id="application" location="${build.jar.dir}/${ant.project.name}.jar"/>
-
-    <path id="classpath">
-        <fileset dir="${lib.dir}" includes="**/*.jar"/>
-    </path>
-
-    <path id="client-console-classpath">
-        <fileset dir="${lib.dir}">
-            <include name="commons-io-2.1.jar"/>
-            <include name="log4j-1.2.16.jar"/>
-        </fileset>
-    </path>
-
-    <!--Clean all-->
+    <!--Clean all modules-->
     <target name="clean">
-        <delete dir="${build.dir}"/>
-    </target>
-
-    <!--Compile all-->
-    <target name="compile">
-        <mkdir dir="${build.classes.dir}"/>
-        <javac srcdir="${src.dir}" destdir="${build.classes.dir}" classpathref="classpath" includeantruntime="false"/>
-    </target>
-
-    <!-- search api jar -->
-    <target name="search-jar" depends="compile">
-        <mkdir dir="${build.jar.dir}"/>
-        <jar destfile="${build.jar.dir}/${search.api.jar}" basedir="${build.classes.dir}/com/main/xmlfilter/search"/>
-    </target>
-
-    <!--XML Services WAR-->
-    <target name="xml-services-war" depends="compile">
-        <war destfile="${build.dir}/${xml_services.server.name}.war" webxml="xml-services-server/src/main/webapp/WEB-INF/web.xml">
-            <zipfileset dir="pages" prefix="pages"/>
-            <lib dir="lib">
-                <!-- remove Servlet classes since they break Tomcat startup -->
-                <exclude name="javax.*"/>
-                <exclude name="jstl-1.2.jar"/>
-            </lib>
-            <classes dir="${build.classes.dir}">
-                <exclude name="**/htmlclient/**"/>
-                <exclude name="**/httpclient/**"/>
-            </classes>
-        </war>
-    </target>
-
-    <!--JSP Client WAR-->
-    <target name="jsp-client-war" depends="compile, search-jar">
-        <war destfile="${build.dir}/${jsp_client.server.name}.war" webxml="xml-services-jsp-client/src/main/webapp/WEB-INF/web.xml">
-            <zipfileset dir="jsp">
-                <exclude name="web.xml"/>
-            </zipfileset>
-            <webinf file="xml-services-jsp-client/src/main/resources/logging.properties"/>
-
-            <!--Tomcat logging-->
-            <webinf file="conf\tomcat\logging.properties" prefix="WEB-INF/classes"/>
-            <lib dir="lib">
-                <!-- remove Servlet classes since they break Tomcat startup -->
-                <exclude name="javax.*"/>
-            </lib>
-            <lib file="${build.jar.dir}/${search.api.jar}"/>
-            <classes dir="${build.classes.dir}">
-                <!--<exclude name="**/httpclient/**"/> it needs HttpClientException-->
-            </classes>
-        </war>
+        <subant target="clean" genericantfile="build.xml">
+            <fileset dir="."/>
+        </subant>
     </target>
 
     <property environment="env"/>
 
     <!--Deploy XML Services-->
-    <target name="deploy-xml-services" depends="xml-services-war">
-        <exec executable="${xml_services.tomcat.home}\bin\shutdown.bat"/>
-        <delete dir="${xml_services.tomcat.home}/${deploy.dir}/${xml_services.server.name}"/>
-        <delete file="${xml_services.tomcat.home}/${deploy.dir}/${xml_services.server.name}.war"/>
-        <copy file="${build.dir}/${xml_services.server.name}.war" toDir="${xml_services.tomcat.home}/${deploy.dir}"/>
-        <exec executable="${xml_services.tomcat.home}\bin\startup.bat"/>
+    <target name="deploy-xml-services-server" depends="build">
+        <exec executable="${xml-services-server.tomcat.home}\bin\shutdown.bat"/>
+        <delete dir="${xml-services-server.tomcat.home}/${deploy.dir}/${xml-services-server.name}"/>
+        <delete file="${xml-services-server.tomcat.home}/${deploy.dir}/${xml-services-server.name}.war"/>
+        <copy file="xml-services-server/build/war/${xml-services-server.name}.war" toDir="${xml-services-server.tomcat.home}/${deploy.dir}"/>
+        <exec executable="${xml-services-server.tomcat.home}\bin\startup.bat"/>
     </target>
 
     <!--Deploy JSP Client-->
-    <target name="deploy-jsp-client" depends="jsp-client-war">
-        <exec executable="${jsp_client.tomcat.home}\bin\shutdown.bat"/>
-        <delete dir="${jsp_client.tomcat.home}/${deploy.dir}/${jsp_client.server.name}"/>
-        <delete file="${jsp_client.tomcat.home}/${deploy.dir}/${jsp_client.server.name}.war"/>
-        <copy file="${build.dir}/${jsp_client.server.name}.war" toDir="${jsp_client.tomcat.home}/${deploy.dir}"/>
-        <exec executable="${jsp_client.tomcat.home}\bin\startup.bat"/>
+    <target name="deploy-xml-services-jsp-client" depends="build">
+        <exec executable="${xml-services-jsp-client.tomcat.home}\bin\shutdown.bat"/>
+        <delete dir="${xml-services-jsp-client.tomcat.home}/${deploy.dir}/${xml-services-jsp-client.name}"/>
+        <delete file="${xml-services-jsp-client.tomcat.home}/${deploy.dir}/${xml-services-jsp-client.name}.war"/>
+        <copy file="xml-services-jsp-client/build/war/${xml-services-jsp-client.name}.war" toDir="${xml-services-jsp-client.tomcat.home}/${deploy.dir}"/>
+        <exec executable="${xml-services-jsp-client.tomcat.home}\bin\startup.bat"/>
     </target>
 
-    <target name="deploy-all" depends="deploy-xml-services, deploy-jsp-client"/>
+    <target name="deploy-all" depends="deploy-xml-services-server, deploy-xml-services-jsp-client"/>
 
-    <property name="browser" value="c:\Program Files (x86)\Mozilla Firefox\firefox.exe"/>
+    <property name="browser.url" value="http://localhost:"/>
 
     <!--Start Servers in browser-->
     <target name="startup" depends="shutdown, clean-deploys, deploy-all">
         <exec executable="${browser}" spawn="yes">
-            <arg line="http://localhost:8080/xml_services"/>
+            <arg line="${browser.url}${xml-services-server.deploy.port}${xml-services-server.name}"/>
         </exec>
         <exec executable="${browser}" spawn="yes">
-            <arg line="http://localhost:8081/jsp_client/login.jsp"/>
+            <arg line="${browser.url}${xml-services-jsp-client.deploy.port}${xml-services-jsp-client.name}"/>
         </exec>
-    </target>
-
-    <!--Run the Http Client Console-->
-    <target name="client-console" depends="clean, deploy-xml-services">
-        <mkdir dir="${build.dir}/client-console"/>
-        <javac srcdir="${src.clientconsole.dir}" destdir="${build.dir}/client-console" includeantruntime="false">
-            <classpath>
-                <path refid="client-console-classpath"/>
-            </classpath>
-        </javac>
-        <java classname="com.xmlservices.consoleclient.HttpClientConsole">
-            <classpath>
-                <path refid="client-console-classpath"/>
-                <path>
-                    <pathelement location="${build.dir}/client-console"/>
-                </path>
-            </classpath>
-        </java>
     </target>
 
     <!--Shutdown the servers-->
     <target name="shutdown">
-        <exec executable="${xml_services.tomcat.home}\bin\shutdown.bat"/>
-        <exec executable="${jsp_client.tomcat.home}\bin\shutdown.bat"/>
+        <exec executable="${xml-services-server.tomcat.home}\bin\shutdown.bat"/>
+        <exec executable="${xml-services-jsp-client.tomcat.home}\bin\shutdown.bat"/>
     </target>
 
     <!--Remove the deployments-->
     <target name="clean-deploys">
-        <delete dir="${xml_services.tomcat.home}/${deploy.dir}/${xml_services.server.name}"/>
-        <delete file="${xml_services.tomcat.home}/${deploy.dir}/${xml_services.server.name}.war"/>
-        <delete dir="${jsp_client.tomcat.home}/${deploy.dir}/${jsp_client.server.name}"/>
-        <delete file="${jsp_client.tomcat.home}/${deploy.dir}/${jsp_client.server.name}.war"/>
-    </target>
-
-    <target name="clean-build" depends="clean,jar"/>
-
-    <target name="main" depends="clean,run"/>
-
-    <!--
-
-    Old stuff
-
-    ant -Dfile="d:/sample.gz" -Dfilter="apple" -DoutputFile="d:\o.txt" -DinputNodeName="Lala" -Dparser="all" -Dgzip="true" -DmemoryTracker="runtime"
-
-    parser          -   all , sax , dom , stax
-    gzip            -   true , false
-    memoryTracker   -   runtime , mx
-
-    or just
-
-    ant
-
-    -->
-
-    <!--Deprecated-->
-    <target name="run" depends="jar">
-        <java fork="true" classname="${main-class}">
-            <classpath>
-                <path refid="classpath"/>
-                <path refid="application"/>
-            </classpath>
-            <arg value="${file}"/>
-            <arg value="${filter}"/>
-            <arg value="${outputFile}"/>
-            <arg value="${inputNodeName}"/>
-            <arg value="${parser}"/>
-            <arg value="${gzip}"/>
-            <arg value="${memoryTracker}"/>
-            <arg value="${help}"/>
-        </java>
-    </target>
-
-    <!--Deprecated-->
-    <target name="jar" depends="compile">
-        <mkdir dir="${build.jar.dir}"/>
-        <jar destfile="${build.jar.dir}/${ant.project.name}.jar" basedir="${build.classes.dir}">
-            <manifest>
-                <attribute name="Main-Class" value="${main-class}"/>
-            </manifest>
-        </jar>
+        <delete dir="${xml-services-server.tomcat.home}/${deploy.dir}/${xml-services-server.name}"/>
+        <delete file="${xml-services-server.tomcat.home}/${deploy.dir}/${xml-services-server.name}.war"/>
+        <delete dir="${xml-services-jsp-client.tomcat.home}/${deploy.dir}/${xml-services-jsp-client.name}"/>
+        <delete file="${xml-services-jsp-client.tomcat.home}/${deploy.dir}/${xml-services-jsp-client.name}.war"/>
     </target>
 
 </project>

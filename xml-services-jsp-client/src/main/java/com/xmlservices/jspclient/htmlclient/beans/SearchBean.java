@@ -1,6 +1,7 @@
 package com.xmlservices.jspclient.htmlclient.beans;
 
 
+import com.xmlservices.jspclient.htmlclient.beans.restclient.XmlServicesClientException;
 import com.xmlservices.logic.api.search.SearchCriteria;
 import com.xmlservices.logic.api.search.SearchItem;
 import com.xmlservices.logic.api.search.SearchItemType;
@@ -25,7 +26,7 @@ public class SearchBean extends AbstractBean {
     private static final String DEFAULT_START_PAGE = "0";
     private List<SearchParameter> searchParameters = new ArrayList<SearchParameter>();
 
-    public void search() throws HttpClientException {
+    public void search() throws XmlServicesClientException {
         SearchCriteria searchCriteria = buildSearchCriteria(parameters);
         validate(searchCriteria);
         responseData = client.search(page, searchCriteria, cookieMap.values().toArray(new Cookie[0]));

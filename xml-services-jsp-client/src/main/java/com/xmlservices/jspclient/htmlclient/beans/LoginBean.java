@@ -1,5 +1,7 @@
 package com.xmlservices.jspclient.htmlclient.beans;
 
+import com.xmlservices.jspclient.htmlclient.beans.restclient.XmlServicesClientException;
+
 import java.net.HttpURLConnection;
 
 /**
@@ -12,7 +14,7 @@ public class LoginBean extends AbstractBean {
     private String username;
     private String password;
 
-    public void login() throws HttpClientException {
+    public void login() throws XmlServicesClientException {
         responseData = client.login(username, password);
     }
 

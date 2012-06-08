@@ -1,5 +1,6 @@
 package com.xmlservices.jspclient.htmlclient.beans;
 
+import com.xmlservices.jspclient.htmlclient.beans.restclient.XmlServicesClient;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.Cookie;

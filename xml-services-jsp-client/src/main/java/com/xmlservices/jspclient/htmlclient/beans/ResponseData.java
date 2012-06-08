@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Response object returned by the {@link XmlServicesClient} calls.
+ * Response object returned by the {@link com.xmlservices.jspclient.htmlclient.beans.restclient.XmlServicesClient} calls.
  *
  * @author Sergiu Indrie
  */

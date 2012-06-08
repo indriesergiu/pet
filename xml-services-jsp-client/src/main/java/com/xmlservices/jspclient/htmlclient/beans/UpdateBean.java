@@ -1,9 +1,11 @@
 package com.xmlservices.jspclient.htmlclient.beans;
 
+import com.xmlservices.jspclient.htmlclient.beans.restclient.XmlServicesClientException;
+
 import javax.servlet.http.Cookie;
 
 /**
- * Performs the update of page contents using the {@link XmlServicesClient} 'update' call.
+ * Performs the update of page contents using the {@link com.xmlservices.jspclient.htmlclient.beans.restclient.XmlServicesClient} 'update' call.
  *
  * @author Sergiu Indrie
  */
@@ -13,7 +15,7 @@ public class UpdateBean extends AbstractBean {
     private String page;
     private String pageContent;
 
-    public void update() throws HttpClientException {
+    public void update() throws XmlServicesClientException {
         validate();
         responseData = client.update(page, pageContent, cookieMap.values().toArray(new Cookie[0]));
     }

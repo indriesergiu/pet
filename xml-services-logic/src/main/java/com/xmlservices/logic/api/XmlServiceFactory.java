@@ -1,7 +1,5 @@
 package com.xmlservices.logic.api;
 
-import com.xmlservices.logic.service.XmlServiceImpl;
-
 /**
  * Creates {@link XmlService} objects.
  *

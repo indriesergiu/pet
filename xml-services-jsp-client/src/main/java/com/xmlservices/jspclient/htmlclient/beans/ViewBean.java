@@ -1,5 +1,6 @@
 package com.xmlservices.jspclient.htmlclient.beans;
 
+import com.xmlservices.jspclient.htmlclient.beans.restclient.XmlServicesClientException;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.servlet.http.Cookie;
@@ -18,7 +19,7 @@ public class ViewBean extends AbstractBean {
     private static final String DEFAULT_START_PAGE = "0";
     private String page;
 
-    public void view() throws HttpClientException {
+    public void view() throws XmlServicesClientException {
         validate();
         responseData = client.view(page, cookieMap.values().toArray(new Cookie[0]));
     }
