@@ -26,7 +26,9 @@
     <!--Jar-->
     <target name="jar" depends="compile">
         <mkdir dir="${build.jar.dir}"/>
-        <jar destfile="${build.jar.dir}/${ant.project.name}.jar" basedir="${build.classes.dir}" manifest="Manifest.txt"/>
+        <jar destfile="${build.jar.dir}/${ant.project.name}.jar" basedir="${build.classes.dir}" manifest="Manifest.txt">
+            <file file="src/main/resources/application.properties"/>
+        </jar>
     </target>
-    
+
 </project>
