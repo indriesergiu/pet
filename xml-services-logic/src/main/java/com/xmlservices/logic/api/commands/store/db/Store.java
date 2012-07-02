@@ -13,6 +13,12 @@ import java.util.Iterator;
  */
 public interface Store {
 
+    void startTransaction() throws StoreException;
+
+    void endTransaction() throws StoreException;
+
+    void cleanUp() throws StoreException;
+
     File addFile(File file) throws StoreException;
 
     Element addElement(Element element) throws StoreException;

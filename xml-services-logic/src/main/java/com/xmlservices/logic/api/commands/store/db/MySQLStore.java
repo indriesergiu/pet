@@ -19,6 +19,8 @@ import java.util.Properties;
 public class MySQLStore implements Store {
 
     private static final Logger log = Logger.getLogger(MySQLStore.class);
+
+    // DB connection static data
     private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
     private static final String JDBC_URL_PREFIX = "jdbc:mysql://";
 
@@ -65,6 +67,7 @@ public class MySQLStore implements Store {
     }
 
     public void close() {
+        log.info("Closing the DB connection..");
         try {
             connection.close();
         } catch (SQLException e) {
@@ -73,11 +76,55 @@ public class MySQLStore implements Store {
     }
 
     @Override
+    public void startTransaction() throws StoreException {
+        try {
+            connection.setAutoCommit(false);
+        } catch (SQLException e) {
+            String message = "An error occurred while setting the transaction start.";
+            log.error(message, e);
+            throw new StoreException(message, e);
+        }
+    }
+
+    @Override
+    public void endTransaction() throws StoreException {
+        try {
+            connection.commit();
+        } catch (SQLException e) {
+            String message = "An error occurred while committing the transaction.";
+            log.error(message, e);
+            // rollback the transaction
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                String rollbackErrorMessage = "An error occurred while rolling back the transaction.";
+                log.error(rollbackErrorMessage, e1);
+                throw new StoreException(rollbackErrorMessage, e1);
+            }
+            throw new StoreException(message, e);
+        }
+    }
+
+    @Override
+    public void cleanUp() throws StoreException {
+        try {
+            connection.rollback();
+        } catch (SQLException e1) {
+            String rollbackErrorMessage = "An error occurred while rolling back existing changes.";
+            log.error(rollbackErrorMessage, e1);
+            throw new StoreException(rollbackErrorMessage, e1);
+        }
+    }
+
+    @Override
     public File addFile(File file) throws StoreException {
+        log.info("Adding file=" + file);
         try {
             PreparedStatement statement = connection.prepareStatement(CREATE_FILE, Statement.RETURN_GENERATED_KEYS);
             int index = 1;
             statement.setString(index, file.getName());
+            log.debug("Performing executeUpdate with query=" + statement.toString());
+
             statement.executeUpdate();
             ResultSet generatedKeys = statement.getGeneratedKeys();
             if (generatedKeys.next()) {
@@ -94,6 +141,7 @@ public class MySQLStore implements Store {
 
     @Override
     public Element addElement(Element element) throws StoreException {
+        log.info("Adding element=" + element);
         try {
             PreparedStatement statement = connection.prepareStatement(CREATE_ELEMENT, Statement.RETURN_GENERATED_KEYS);
             int index = 1;
@@ -105,6 +153,7 @@ public class MySQLStore implements Store {
             statement.setString(index++, element.getData());
             statement.setString(index++, element.getEncoding());
             statement.setString(index++, element.getVersion());
+            log.debug("Performing executeUpdate with query=" + statement.toString());
 
             statement.executeUpdate();
             ResultSet generatedKeys = statement.getGeneratedKeys();
@@ -122,6 +171,7 @@ public class MySQLStore implements Store {
 
     @Override
     public Attribute addAttribute(Attribute attribute) throws StoreException {
+        log.info("Adding attribute=" + attribute);
         try {
             PreparedStatement statement = connection.prepareStatement(CREATE_ATTRIBUTE, Statement.RETURN_GENERATED_KEYS);
             int index = 1;
@@ -129,6 +179,7 @@ public class MySQLStore implements Store {
             statement.setInt(index++, attribute.getNr());
             statement.setString(index++, attribute.getName());
             statement.setString(index++, attribute.getValue());
+            log.debug("Performing executeUpdate with query=" + statement.toString());
 
             statement.executeUpdate();
             ResultSet generatedKeys = statement.getGeneratedKeys();
@@ -145,6 +196,7 @@ public class MySQLStore implements Store {
 
     @Override
     public Element getElement(int fileId, int nr) throws StoreException {
+        log.info(MessageFormat.format("Obtaining element with fileId={0} and nr={1}", fileId, nr));
         try {
             PreparedStatement statement = connection.prepareStatement(GET_ELEMENT_NR);
             int index = 1;
@@ -154,6 +206,7 @@ public class MySQLStore implements Store {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet != null) {
                 Element element = getElementFromResultSet(resultSet);
+                log.debug("Obtained element=" + element);
                 statement.close();
                 return element;
             }
@@ -168,6 +221,7 @@ public class MySQLStore implements Store {
 
     @Override
     public Attribute getAttribute(int elementId, int nr) throws StoreException {
+        log.info(MessageFormat.format("Obtaining attribute with elementId={0} and nr={1}", elementId, nr));
         try {
             PreparedStatement statement = connection.prepareStatement(GET_ATTRIBUTE_NR);
             int index = 1;
@@ -177,6 +231,7 @@ public class MySQLStore implements Store {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet != null) {
                 Attribute attribute = getAttributeFromResultSet(resultSet);
+                log.debug("Obtained attribute=" + attribute);
                 statement.close();
                 return attribute;
             }
