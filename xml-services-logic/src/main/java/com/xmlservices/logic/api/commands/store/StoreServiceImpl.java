@@ -1,5 +1,6 @@
 package com.xmlservices.logic.api.commands.store;
 
+import com.xmlservices.logic.api.commands.store.db.MySQLStore;
 import com.xmlservices.logic.api.commands.store.db.Store;
 import com.xmlservices.logic.api.commands.store.db.StoreException;
 import com.xmlservices.logic.api.commands.store.model.Attribute;
@@ -7,8 +8,10 @@ import com.xmlservices.logic.api.commands.store.model.Element;
 import com.xmlservices.logic.api.commands.store.model.File;
 import com.xmlservices.logic.api.commands.xml.CommandParser;
 import com.xmlservices.logic.api.commands.xml.StAXGenericParser;
+import com.xmlservices.logic.api.commands.xml.elements.ElementType;
 import com.xmlservices.logic.api.commands.xml.elements.XmlElement;
 import com.xmlservices.logic.config.Config;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -22,6 +25,7 @@ import java.util.Map;
 public class StoreServiceImpl implements StoreService {
 
     private static final Logger log = Logger.getLogger(StoreServiceImpl.class);
+
     private static final String UNKNOWN_FILE_PREFIX = "Unknown - ";
 
     private Store store;
@@ -55,7 +59,13 @@ public class StoreServiceImpl implements StoreService {
         } catch (InvalidContentException e) {
             String message = "Failed to successfully import the content";
             log.error(message, e);
-            throw e;
+            try {
+                store.cleanUp();
+            } catch (StoreException e1) {
+                log.error(e1);
+                throw new IllegalStateException(e1);
+            }
+            throw new IllegalStateException(message, e);
         } catch (StoreException e) {
             String message = "Failed to successfully import the content";
             log.error(message, e);
@@ -74,6 +84,7 @@ public class StoreServiceImpl implements StoreService {
     }
 
     private void processImport(CommandParser commandParser) throws Exception {
+        log.debug("Beginning import process..");
         store.startTransaction();
 
         // create the file
@@ -85,19 +96,16 @@ public class StoreServiceImpl implements StoreService {
         while (element != null) {
 
             validateElement(element);
-
-            switch (element.getType()) {
-                case START_ELEMENT:
-                    lastElement = store.addElement(convertToDbElement(file, element, lastElement));
-                    addAttributes(element, lastElement);
-                    break;
-
+            lastElement = store.addElement(convertToDbElement(file, element, lastElement));
+            if (element.getType().equals(ElementType.START_ELEMENT)) {
+                addAttributes(element, lastElement);
             }
 
             element = commandParser.getNextElement();
         }
 
         store.endTransaction();
+        log.debug("Import process finished successfully.");
     }
 
     private void validateElement(XmlElement element) throws InvalidContentException {
@@ -122,7 +130,7 @@ public class StoreServiceImpl implements StoreService {
 
     private boolean validContent(String value) {
         // TODO sergiu.indrie - externalize/generalize
-        return value.equals("TheFatalErr0r");
+        return !value.equals("TheFatalErr0r");
     }
 
     private void addAttributes(XmlElement element, Element dbElement) throws StoreException {
@@ -148,7 +156,13 @@ public class StoreServiceImpl implements StoreService {
         return result;
     }
 
-    public static void main(String[] args) {
-        System.out.println(Calendar.getInstance().getTime().toString());
+    public static void main(String[] args) throws InvalidContentException, FileNotFoundException {
+        BasicConfigurator.configure();
+        Store store = new MySQLStore();
+        StoreService service = new StoreServiceImpl(store);
+        // will work
+//        service.importXml("d:\\down\\temp\\books.xml");
+        // will fail
+        service.importXml("d:\\down\\temp\\books_invalid.xml");
     }
 }

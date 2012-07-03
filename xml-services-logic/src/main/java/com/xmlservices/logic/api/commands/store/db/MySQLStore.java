@@ -107,6 +107,7 @@ public class MySQLStore implements Store {
 
     @Override
     public void cleanUp() throws StoreException {
+        log.info("Cleaning up any remaining DB state. Rolling back changes..");
         try {
             connection.rollback();
         } catch (SQLException e1) {
